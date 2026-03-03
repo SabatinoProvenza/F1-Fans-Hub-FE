@@ -1,0 +1,44 @@
+.navbar {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 10;
+  background: transparent;
+  padding-top: 1.2rem;
+}
+
+.logoWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.logo {
+  height: 30px;
+  width: auto;
+  display: block;
+}
+
+.brandText {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f5f5f5;
+  transition: color 0.2s ease;
+}
+
+.brand:hover .brandText {
+  color: #e10600;
+}
+
+.link {
+  color: #f5f5f5 !important;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: #e10600 !important;
+}/*# sourceMappingURL=Navbar.module.css.map */

@@ -1,0 +1,14 @@
+// ===== BRAND PALETTE =====
+$brand-dark: #0f0f0f;
+$brand-dark-2: #1a1a1a;
+$brand-white: #f5f5f5;
+$brand-muted: #a0a0a0;
+$brand-red: #e10600;
+
+// ===== BOOTSTRAP OVERRIDES =====
+$primary: $brand-red;
+$body-bg: $brand-dark;
+$body-color: $brand-white;
+$card-bg: $brand-dark-2;
+$link-color: $brand-red;
+$border-radius: 1rem;

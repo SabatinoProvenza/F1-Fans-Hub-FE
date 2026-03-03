@@ -1,0 +1,46 @@
+@import "../styles/variables";
+
+.navbar {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 10;
+  background: transparent;
+  padding-top: 1.2rem;
+}
+
+.logoWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.logo {
+  height: 30px;
+  width: auto;
+  display: block;
+}
+
+.brandText {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $brand-white;
+  transition: color 0.2s ease;
+}
+
+.brand:hover .brandText {
+  color: $brand-red;
+}
+
+.link {
+  color: $brand-white !important;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: $brand-red !important;
+}
