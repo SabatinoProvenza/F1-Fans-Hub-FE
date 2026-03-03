@@ -1,4 +1,5 @@
 import styles from "../ArticleRaw/ArticleRaw.module.scss"
+import { Link } from "react-router-dom"
 
 const ArticleRow = function ({ article, reverse = false }) {
   return (
@@ -27,7 +28,12 @@ const ArticleRow = function ({ article, reverse = false }) {
             </p>
             <p className="mb-0">{article.excerpt}</p>
 
-            <button className="btn btn-primary mt-3">Read More</button>
+            <Link
+              to={`/articles/${article.id}`}
+              className="btn btn-primary mt-3"
+            >
+              Read More
+            </Link>
           </div>
         </div>
       </div>
