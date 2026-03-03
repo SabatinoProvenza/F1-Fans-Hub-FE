@@ -16,6 +16,20 @@ function App() {
             </div>
           }
         />
+        <Route
+          path="/login"
+          element={
+            <div className="container py-5 text-white">Login (coming soon)</div>
+          }
+        />
+        <Route
+          path="/favorites"
+          element={
+            <div className="container py-5 text-white">
+              Favorites (coming soon)
+            </div>
+          }
+        />
       </Routes>
     </BrowserRouter>
   )

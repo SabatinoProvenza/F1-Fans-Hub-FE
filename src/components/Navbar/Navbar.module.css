@@ -7,6 +7,20 @@
   padding-top: 1.2rem;
 }
 
+.collapseMenu {
+  /* solo mobile/tablet: metto un fondo quando si apre */
+}
+@media (max-width: 767.98px) {
+  .collapseMenu {
+    margin-top: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    background: rgba(15, 15, 15, 0.92);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+}
+
 .logoWrapper {
   display: flex;
   align-items: center;

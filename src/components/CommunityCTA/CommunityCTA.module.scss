@@ -10,6 +10,10 @@
   );
 }
 
+.wrapper:hover {
+  transform: translateY(-6px);
+}
+
 .kicker {
   color: $brand-white;
   opacity: 0.85;

@@ -1,9 +1,10 @@
 import styles from "../Navbar/Navbar.module.scss"
 import logo from "../../assets/F1.svg"
+import { Link } from "react-router-dom"
 
 const Navbar = function () {
   return (
-    <nav className={`navbar navbar-expand-lg navbar-dark ${styles.navbar}`}>
+    <nav className={`navbar navbar-expand-md navbar-dark ${styles.navbar}`}>
       <div className="container">
         <a className={`navbar-brand ${styles.brand}`} href="/">
           <div className={styles.logoWrapper}>
@@ -24,14 +25,20 @@ const Navbar = function () {
           <span className="navbar-toggler-icon" />
         </button>
 
-        <div className="collapse navbar-collapse" id="mainNavbar">
+        <div
+          className={`collapse navbar-collapse ${styles.collapseMenu}`}
+          id="mainNavbar"
+        >
           <div className="navbar-nav ms-auto gap-lg-4">
-            <a className={`nav-link ${styles.link}`} href="/favorites">
+            <Link className={`nav-link ${styles.link}`} to="/favorites">
               Preferiti
-            </a>
-            <a className={`nav-link ${styles.link}`} href="/login">
+            </Link>
+            <Link className={`nav-link ${styles.link}`} to="/community">
+              Community
+            </Link>
+            <Link className={`nav-link ${styles.link}`} to="/login">
               Login
-            </a>
+            </Link>
           </div>
         </div>
       </div>

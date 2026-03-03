@@ -1,4 +1,5 @@
 import CommunityCTA from "../components/CommunityCTA/CommunityCTA"
+import Footer from "../components/Footer/Footer"
 import Hero from "../components/Hero/Hero"
 import Navbar from "../components/Navbar/Navbar"
 import NewsSection from "../components/NewsSection"
@@ -9,9 +10,19 @@ const HomePage = function () {
     <>
       <Navbar />
       <Hero />
-      <NewsSection />
-      <TrendingSection />
-      <CommunityCTA />
+      <section className="section">
+        <NewsSection />
+      </section>
+
+      <section className="section">
+        <TrendingSection />
+      </section>
+
+      <section className="section">
+        <CommunityCTA />
+      </section>
+
+      <Footer />
     </>
   )
 }
