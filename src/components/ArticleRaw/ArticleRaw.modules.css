@@ -1,0 +1,32 @@
+.imageWrap {
+  border-radius: 1.25rem;
+  overflow: hidden;
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.45);
+  height: 420px;
+}
+
+.imageWrap img {
+  -o-object-fit: cover;
+     object-fit: cover;
+  display: block;
+}
+
+.textBox {
+  border: 2px solid rgba(245, 245, 245, 0.75);
+  border-radius: 1.25rem;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.textBox h3 {
+  color: #f5f5f5;
+  font-weight: 800;
+}
+
+.textBox p {
+  color: #f5f5f5;
+}
+
+:global(.text-muted) {
+  color: #a0a0a0 !important;
+}/*# sourceMappingURL=ArticleRaw.modules.css.map */
