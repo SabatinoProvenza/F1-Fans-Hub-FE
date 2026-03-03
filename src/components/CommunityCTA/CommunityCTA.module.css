@@ -1,0 +1,28 @@
+.wrapper {
+  padding: 4rem 2rem;
+  border-radius: 1.5rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+}
+
+.kicker {
+  color: #f5f5f5;
+  opacity: 0.85;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  color: #f5f5f5;
+  font-weight: 800;
+  line-height: 1.05;
+  font-size: clamp(2.3rem, 5vw, 4rem);
+  margin-bottom: 2.5rem;
+}
+
+.ctaBtn {
+  border-radius: 999px;
+  padding: 1rem 2.5rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}/*# sourceMappingURL=CommunityCTA.module.css.map */

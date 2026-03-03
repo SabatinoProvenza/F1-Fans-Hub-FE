@@ -1,3 +1,4 @@
+import CommunityCTA from "../components/CommunityCTA/CommunityCTA"
 import Hero from "../components/Hero/Hero"
 import Navbar from "../components/Navbar/Navbar"
 import NewsSection from "../components/NewsSection"
@@ -10,6 +11,7 @@ const HomePage = function () {
       <Hero />
       <NewsSection />
       <TrendingSection />
+      <CommunityCTA />
     </>
   )
 }

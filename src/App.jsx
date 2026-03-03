@@ -8,6 +8,14 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/articles/:id" element={<ArticleDetail />} />
+        <Route
+          path="/community"
+          element={
+            <div className="container py-5 text-white">
+              Community (coming soon)
+            </div>
+          }
+        />
       </Routes>
     </BrowserRouter>
   )
