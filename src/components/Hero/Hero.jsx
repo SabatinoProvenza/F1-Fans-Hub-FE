@@ -15,9 +15,12 @@ const Hero = function () {
               insights and driver stories.
             </p>
 
-            <button className="btn btn-primary mt-3">
+            <a
+              href="#news"
+              className="btn btn-primary rounded-pill px-4 fw-bold"
+            >
               Dive Into The Action
-            </button>
+            </a>
           </div>
 
           {/* Immagine */}

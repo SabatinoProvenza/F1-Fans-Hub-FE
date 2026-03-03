@@ -10,7 +10,7 @@ const HomePage = function () {
     <>
       <Navbar />
       <Hero />
-      <section className="section">
+      <section id="news" className="section">
         <NewsSection />
       </section>
 
