@@ -1,5 +1,3 @@
-@use "../../styles/variables" as *;
-
 .imageWrap {
   border-radius: 1.25rem;
   overflow: hidden;
@@ -8,7 +6,8 @@
 }
 
 .imageWrap img {
-  object-fit: cover;
+  -o-object-fit: cover;
+     object-fit: cover;
   display: block;
 }
 
@@ -20,14 +19,14 @@
 }
 
 .textBox h3 {
-  color: $brand-white;
+  color: #f5f5f5;
   font-weight: 800;
 }
 
 .textBox p {
-  color: $brand-white;
+  color: #f5f5f5;
 }
 
 :global(.text-muted) {
-  color: $brand-muted !important;
-}
+  color: #a0a0a0 !important;
+}/*# sourceMappingURL=ArticleRaw.module.css.map */
