@@ -1,5 +1,5 @@
-import styles from "./Navbar.module.scss"
-import logo from "../assets/F1.svg"
+import styles from "../Navbar/Navbar.module.scss"
+import logo from "../../assets/F1.svg"
 
 const Navbar = function () {
   return (

@@ -1,0 +1,51 @@
+@import "../../styles/variables";
+
+.hero {
+  position: relative;
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  padding-top: 8rem; // spazio per navbar assoluta
+  padding-bottom: 3rem;
+  overflow: hidden;
+
+  // base scura con profondità
+  background:
+    radial-gradient(
+      1200px 700px at 25% 35%,
+      rgba(255, 255, 255, 0.06) 0%,
+      rgba(255, 255, 255, 0) 55%
+    ),
+    radial-gradient(
+      900px 600px at 75% 45%,
+      rgba(225, 6, 0, 0.14) 0%,
+      rgba(225, 6, 0, 0) 60%
+    ),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0) 40%);
+}
+
+.title {
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 1.25rem;
+  color: $brand-white;
+}
+
+.subtitle {
+  color: $brand-muted;
+  font-size: 1.1rem;
+  max-width: 520px;
+}
+
+.imageWrapper {
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.55);
+}
+
+.imageWrapper img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
