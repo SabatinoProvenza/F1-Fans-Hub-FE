@@ -1,13 +1,28 @@
 import { Link, useParams } from "react-router-dom"
-import { mockArticles } from "../mockArticles"
+import { useState, useEffect } from "react"
 import Navbar from "../components/Navbar/Navbar"
 import Footer from "../components/Footer/Footer"
 
 const ArticleDetail = function () {
   const { id } = useParams()
-  const article = mockArticles.find((a) => a.id === id)
+  const [article, setArticle] = useState(null)
+  const [error, setError] = useState(null)
 
-  if (!article) {
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch(`http://localhost:8080/api/news/${id}`)
+        if (!res.ok) throw new Error("Articolo non trovato")
+        const data = await res.json()
+        setArticle(data)
+      } catch (e) {
+        setError(e.message)
+      }
+    }
+    load()
+  }, [id])
+
+  if (error) {
     return (
       <div className="container py-5 text-white">
         <h1>Articolo non trovato</h1>
@@ -19,7 +34,10 @@ const ArticleDetail = function () {
     )
   }
 
-  const dateLabel = new Date(article.publishedAt).toLocaleDateString("it-IT", {
+  if (!article)
+    return <p className="container py-5 text-white">Caricamento...</p>
+
+  const dateLabel = new Date(article.pubDate).toLocaleDateString("it-IT", {
     day: "2-digit",
     month: "long",
     year: "numeric",
@@ -35,21 +53,19 @@ const ArticleDetail = function () {
 
         <div className="mt-4">
           <p className="text-muted fw-semibold mb-2">
-            {article.source?.name} • {dateLabel}
+            {article.source} • {dateLabel}
           </p>
 
           <h1 className="display-5 fw-bold">{article.title}</h1>
 
-          <div className="mt-4">
+          <div className="mt-4 ">
             <img
-              src={article.imageUrl}
+              src={article.image}
               alt={article.title}
               className="w-100 rounded-4"
               style={{ maxHeight: 520, objectFit: "cover" }}
             />
           </div>
-
-          <p className="mt-4 fs-5 text-white-50">{article.excerpt}</p>
 
           <div className="mt-4 fs-5" style={{ lineHeight: 1.7 }}>
             {article.content
@@ -62,7 +78,7 @@ const ArticleDetail = function () {
           </div>
 
           <a
-            href={article.url}
+            href={article.link}
             target="_blank"
             rel="noreferrer"
             className="btn btn-outline-light mt-3"

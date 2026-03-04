@@ -2,6 +2,11 @@ import styles from "../ArticleRaw/ArticleRaw.module.scss"
 import { Link } from "react-router-dom"
 
 const ArticleRow = function ({ article, reverse = false }) {
+  const truncate = function (text, length = 160) {
+    if (!text) return ""
+    return text.length > length ? text.slice(0, length) + "..." : text
+  }
+
   return (
     <article className="container my-5">
       <div
@@ -23,8 +28,8 @@ const ArticleRow = function ({ article, reverse = false }) {
           <div className={styles.textBox}>
             <h3 className="mb-3">{article.title}</h3>
 
-            <p className="text-muted fw-semibold mb-2">{article.pubDate}</p>
-            <p className="mb-0">{article.description}</p>
+            <p className="text-muted fw-semibold mb-2">{article.source}</p>
+            <p className="mb-0">{truncate(article.description)}</p>
 
             <Link
               to={`/articles/${article.id}`}
