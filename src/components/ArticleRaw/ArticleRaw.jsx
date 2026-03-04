@@ -11,7 +11,7 @@ const ArticleRow = function ({ article, reverse = false }) {
         <div className="col-12 col-lg-7">
           <div className={styles.imageWrap}>
             <img
-              src={article.imageUrl}
+              src={article.image}
               alt={article.title}
               className="w-100 h-100"
             />
@@ -23,10 +23,8 @@ const ArticleRow = function ({ article, reverse = false }) {
           <div className={styles.textBox}>
             <h3 className="mb-3">{article.title}</h3>
 
-            <p className="text-muted fw-semibold mb-2">
-              {article.source?.name}
-            </p>
-            <p className="mb-0">{article.excerpt}</p>
+            <p className="text-muted fw-semibold mb-2">{article.pubDate}</p>
+            <p className="mb-0">{article.description}</p>
 
             <Link
               to={`/articles/${article.id}`}
