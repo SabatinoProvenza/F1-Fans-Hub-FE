@@ -58,11 +58,11 @@ const ArticleDetail = function () {
 
           <h1 className="display-5 fw-bold">{article.title}</h1>
 
-          <div className="mt-4 ">
+          <div className="mt-4 d-flex justify-content-center ">
             <img
               src={article.image}
               alt={article.title}
-              className="w-100 rounded-4"
+              className="img-fluid rounded-4"
               style={{ maxHeight: 520, objectFit: "cover" }}
             />
           </div>

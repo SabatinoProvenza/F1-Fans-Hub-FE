@@ -1,7 +1,7 @@
 import ArticleRow from "../components/ArticleRaw/ArticleRaw"
 import { useEffect, useState } from "react"
 
-export default function NewsSection() {
+const NewsSection = function () {
   const [articles, setArticles] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -48,3 +48,5 @@ export default function NewsSection() {
     </section>
   )
 }
+
+export default NewsSection
