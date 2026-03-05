@@ -15,6 +15,22 @@
   transition: transform 0.25s ease;
 }
 
+.cardTitle {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.cardDescription {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+  overflow: hidden;
+}
+
 .card:hover {
   transform: translateY(-6px);
 }
@@ -39,7 +55,11 @@
   border-radius: 50%;
   font-size: 1.5rem;
   font-weight: bold;
+  text-decoration: none;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .arrowBtn:hover {
