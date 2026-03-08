@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import HomePage from "./pages/HomePage"
 import ArticleDetail from "./pages/ArticleDetail"
+import AuthPage from "./pages/AuthPage"
 
 function App() {
   return (
@@ -16,12 +17,7 @@ function App() {
             </div>
           }
         />
-        <Route
-          path="/login"
-          element={
-            <div className="container py-5 text-white">Login (coming soon)</div>
-          }
-        />
+        <Route path="/login" element={<AuthPage />} />
         <Route
           path="/favorites"
           element={

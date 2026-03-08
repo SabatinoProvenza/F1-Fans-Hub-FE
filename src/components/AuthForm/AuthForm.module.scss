@@ -1,0 +1,159 @@
+@use "../../styles/variables" as *;
+
+.page {
+  min-height: 100vh;
+  background: $brand-dark;
+  display: flex;
+  align-items: center;
+  padding: 3rem 0;
+}
+
+.card {
+  background: $brand-dark-2;
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: $border-radius;
+  padding: 2.25rem;
+}
+
+.title {
+  color: $brand-white;
+  font-weight: 800;
+  font-size: 2rem;
+  margin-bottom: 0.35rem;
+}
+
+.subtitle {
+  color: $brand-muted;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.field {
+  margin-bottom: 1rem;
+}
+
+.label {
+  display: block; // ✅ fondamentale: label sopra
+  color: $brand-muted;
+  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+}
+
+.input {
+  display: block;
+  width: 100%;
+  background: $brand-dark;
+  border: 1px solid rgba(245, 245, 245, 0.14);
+  color: $brand-white;
+  border-radius: 0.85rem; // un filo meno “palla”
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  line-height: 1.2;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &::placeholder {
+    color: rgba(245, 245, 245, 0.35);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $brand-red;
+    box-shadow: 0 0 0 0.25rem rgba(225, 6, 0, 0.22);
+  }
+}
+
+.button {
+  width: 100%;
+  margin-top: 0.5rem;
+  border: 0;
+  border-radius: 1rem;
+  padding: 0.95rem 1rem;
+  font-weight: 800;
+  background: $brand-red;
+  color: $brand-white;
+  transition:
+    transform 0.08s ease,
+    filter 0.2s ease;
+
+  &:hover {
+    filter: brightness(0.92);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+.alert {
+  border-radius: 0.9rem;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(245, 245, 245, 0.12);
+  font-size: 0.95rem;
+}
+
+.alertError {
+  background: rgba(225, 6, 0, 0.14);
+  border-color: rgba(225, 6, 0, 0.35);
+  color: $brand-white;
+}
+
+.alertSuccess {
+  background: rgba(0, 226, 140, 0.12);
+  border-color: rgba(0, 226, 140, 0.25);
+  color: $brand-white;
+}
+
+.switch {
+  text-align: center;
+  margin-top: 1.25rem;
+  color: $brand-muted;
+  font-size: 0.95rem;
+}
+
+.linkBtn {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-left: 0.35rem;
+  color: $brand-red;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.passwordWrapper {
+  position: relative;
+}
+
+.showBtn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: $brand-muted;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.showBtn:hover {
+  color: $brand-white;
+}
