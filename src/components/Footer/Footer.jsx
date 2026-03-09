@@ -1,8 +1,16 @@
 import styles from "./Footer.module.scss"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { useAuth } from "../Context/AuthContext"
 
 const Footer = function () {
   const year = new Date().getFullYear()
+  const { user, loading, logout } = useAuth()
+  const navigate = useNavigate()
+
+  function handleLogout() {
+    logout()
+    navigate("/")
+  }
 
   return (
     <footer className={styles.footer}>
@@ -19,9 +27,22 @@ const Footer = function () {
             <Link to="/community" className={styles.link}>
               Community
             </Link>
-            <Link to="/login" className={styles.link}>
-              Login
-            </Link>
+            {!loading &&
+              (user ? (
+                <>
+                  <Link className={styles.link} to="/profile">
+                    {user.username}
+                  </Link>
+
+                  <button onClick={handleLogout} className={styles.buttonLink}>
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <Link className={styles.link} to="/login">
+                  Login
+                </Link>
+              ))}
           </div>
 
           <div className={styles.right}>

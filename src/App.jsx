@@ -26,6 +26,14 @@ function App() {
             </div>
           }
         />
+        <Route
+          path="/profile"
+          element={
+            <div className="container py-5 text-white">
+              Profile (coming soon)
+            </div>
+          }
+        />
       </Routes>
     </BrowserRouter>
   )

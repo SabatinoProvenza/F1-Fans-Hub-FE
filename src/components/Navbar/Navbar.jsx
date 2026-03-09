@@ -1,8 +1,17 @@
 import styles from "../Navbar/Navbar.module.scss"
 import logo from "../../assets/F1.svg"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { useAuth } from "../Context/AuthContext"
 
 const Navbar = function () {
+  const { user, loading, logout } = useAuth()
+  const navigate = useNavigate()
+
+  function handleLogout() {
+    logout()
+    navigate("/")
+  }
+
   return (
     <nav className={`navbar navbar-expand-md navbar-dark ${styles.navbar}`}>
       <div className="container">
@@ -33,12 +42,30 @@ const Navbar = function () {
             <Link className={`nav-link ${styles.link}`} to="/favorites">
               Preferiti
             </Link>
+
             <Link className={`nav-link ${styles.link}`} to="/community">
               Community
             </Link>
-            <Link className={`nav-link ${styles.link}`} to="/login">
-              Login
-            </Link>
+
+            {!loading &&
+              (user ? (
+                <>
+                  <Link className={`nav-link ${styles.link}`} to="/profile">
+                    {user.username}
+                  </Link>
+
+                  <button
+                    onClick={handleLogout}
+                    className={`nav-link ${styles.link}`}
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <Link className={`nav-link ${styles.link}`} to="/login">
+                  Login
+                </Link>
+              ))}
           </div>
         </div>
       </div>

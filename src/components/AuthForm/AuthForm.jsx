@@ -1,7 +1,8 @@
 import { useState } from "react"
 import styles from "./AuthForm.module.scss"
 import { FiEye, FiEyeOff } from "react-icons/fi"
-import { Navigate, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
+import { useAuth } from "../Context/AuthContext"
 
 const AuthForm = function () {
   const [mode, setMode] = useState("login")
@@ -11,6 +12,7 @@ const AuthForm = function () {
 
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+  const { login } = useAuth()
 
   const initialForm = {
     name: "",
@@ -141,7 +143,7 @@ const AuthForm = function () {
       }
 
       if (data?.token) {
-        localStorage.setItem("token", data.token)
+        await login(data.token)
       }
 
       setMsg({
@@ -154,10 +156,10 @@ const AuthForm = function () {
       resetForm()
       setErrors([])
       navigate("/")
-    } catch (error) {
+    } catch (e) {
       setMsg({
         type: "error",
-        text: "Errore di rete.",
+        text: console.error(e),
       })
     } finally {
       setLoading(false)

@@ -29,7 +29,7 @@
 
 .link {
   text-decoration: none;
-  color: $brand-muted;
+  color: $brand-white;
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -43,4 +43,20 @@
 .copy {
   color: $brand-muted;
   font-size: 0.9rem;
+}
+
+.buttonLink {
+  background: none;
+  border: none;
+  padding: 0;
+  color: $brand-white;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+.buttonLink:hover {
+  color: $brand-red;
 }
