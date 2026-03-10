@@ -1,5 +1,5 @@
+import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
-import { useState, useEffect } from "react"
 import Navbar from "../components/Navbar/Navbar"
 import Footer from "../components/Footer/Footer"
 
@@ -8,11 +8,25 @@ const ArticleDetail = function () {
   const [article, setArticle] = useState(null)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [favoriteLoading, setFavoriteLoading] = useState(false)
+  const [favoriteMessage, setFavoriteMessage] = useState("")
 
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch(`http://localhost:8080/api/news/${id}`)
+        const token = localStorage.getItem("token")
+        const url = token
+          ? `http://localhost:8080/api/me/news/${id}`
+          : `http://localhost:8080/api/news/${id}`
+
+        const res = await fetch(url, {
+          headers: token
+            ? {
+                Authorization: `Bearer ${token}`,
+              }
+            : {},
+        })
+
         if (!res.ok) throw new Error("Articolo non trovato")
         const data = await res.json()
         setArticle(data)
@@ -22,8 +36,54 @@ const ArticleDetail = function () {
         setLoading(false)
       }
     }
+
     load()
   }, [id])
+
+  const handleAddFavorite = async () => {
+    const token = localStorage.getItem("token")
+
+    if (!token) {
+      setFavoriteMessage("Devi effettuare il login per salvare i preferiti")
+      return
+    }
+
+    if (!article) return
+
+    try {
+      setFavoriteLoading(true)
+      setFavoriteMessage("")
+
+      const res = await fetch("http://localhost:8080/favorites", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(article),
+      })
+
+      if (res.status === 401) {
+        throw new Error("Non sei autenticato")
+      }
+
+      if (res.status === 403) {
+        throw new Error("Non sei autorizzato")
+      }
+
+      if (!res.ok) {
+        throw new Error("Errore nel salvataggio dei preferiti")
+      }
+
+      const savedArticle = await res.json()
+      setArticle(savedArticle)
+      setFavoriteMessage("Articolo salvato nei preferiti")
+    } catch (e) {
+      setFavoriteMessage(e.message)
+    } finally {
+      setFavoriteLoading(false)
+    }
+  }
 
   const dateLabel = article?.pubDate
     ? new Date(article.pubDate).toLocaleDateString("it-IT", {
@@ -61,7 +121,7 @@ const ArticleDetail = function () {
 
             <h1 className="display-5 fw-bold">{article.title}</h1>
 
-            <div className="mt-4 d-flex justify-content-center ">
+            <div className="mt-4 d-flex justify-content-center">
               <img
                 src={article.image}
                 alt={article.title}
@@ -71,7 +131,7 @@ const ArticleDetail = function () {
             </div>
 
             <div className="mt-4 fs-5" style={{ lineHeight: 1.7 }}>
-              {article.content
+              {article.description
                 .trim()
                 .split("\n")
                 .filter(Boolean)
@@ -80,14 +140,32 @@ const ArticleDetail = function () {
                 ))}
             </div>
 
-            <a
-              href={article.link}
-              target="_blank"
-              rel="noreferrer"
-              className="btn btn-outline-light mt-3"
-            >
-              Leggi alla fonte
-            </a>
+            {favoriteMessage && (
+              <p className="mt-3 mb-0 text-primary">{favoriteMessage}</p>
+            )}
+
+            <div className="mt-4 d-flex gap-3">
+              <button
+                onClick={handleAddFavorite}
+                disabled={favoriteLoading || article.isFavorite}
+                className="btn btn-primary"
+              >
+                {favoriteLoading
+                  ? "Salvataggio..."
+                  : article.isFavorite
+                    ? "❤️ Nei preferiti"
+                    : "🤍 Aggiungi ai preferiti"}
+              </button>
+
+              <a
+                href={article.link}
+                target="_blank"
+                rel="noreferrer"
+                className="btn btn-outline-light"
+              >
+                Leggi alla fonte
+              </a>
+            </div>
           </div>
         )}
       </div>
