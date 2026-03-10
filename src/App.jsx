@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import HomePage from "./pages/HomePage"
 import ArticleDetail from "./pages/ArticleDetail"
 import AuthPage from "./pages/AuthPage"
+import FavoritesPage from "./pages/FavoritesPage"
 
 function App() {
   return (
@@ -18,14 +19,7 @@ function App() {
           }
         />
         <Route path="/login" element={<AuthPage />} />
-        <Route
-          path="/favorites"
-          element={
-            <div className="container py-5 text-white">
-              Favorites (coming soon)
-            </div>
-          }
-        />
+        <Route path="/favorites" element={<FavoritesPage />} />
         <Route
           path="/profile"
           element={
