@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import Navbar from "../components/Navbar/Navbar"
-import Footer from "../components/Footer/Footer"
 
 const FavoritesPage = () => {
   const [favorites, setFavorites] = useState([])
@@ -42,12 +40,10 @@ const FavoritesPage = () => {
 
   if (loading) return <p className="text-white">Caricamento...</p>
 
-  if (error) return <p className="text-danger">{error}</p>
+  if (error) return <p className="container my-5 py-5 text-primary">{error}</p>
 
   return (
     <>
-      <Navbar />
-
       <div className=" container py-5 text-white ">
         <h1 className="my-5">I tuoi preferiti</h1>
 
@@ -81,8 +77,6 @@ const FavoritesPage = () => {
           ))}
         </div>
       </div>
-
-      <Footer />
     </>
   )
 }

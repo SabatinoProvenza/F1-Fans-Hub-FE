@@ -95,7 +95,6 @@ const ArticleDetail = function () {
 
   return (
     <>
-      <Navbar />
       <div className="container py-5 my-5 text-white">
         <Link to="/" className="btn btn-primary rounded-pill px-4 mb-4 fw-bold">
           ← Torna alla Home
@@ -169,8 +168,6 @@ const ArticleDetail = function () {
           </div>
         )}
       </div>
-
-      <Footer />
     </>
   )
 }
