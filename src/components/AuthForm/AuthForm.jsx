@@ -1,7 +1,7 @@
 import { useState } from "react"
 import styles from "./AuthForm.module.scss"
 import { FiEye, FiEyeOff } from "react-icons/fi"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "../Context/AuthContext"
 
 const AuthForm = function () {
@@ -9,6 +9,8 @@ const AuthForm = function () {
   const isRegister = mode === "register"
 
   const navigate = useNavigate()
+  const location = useLocation()
+  const from = location.state?.from || "/"
 
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -155,7 +157,7 @@ const AuthForm = function () {
 
       resetForm()
       setErrors([])
-      navigate("/")
+      navigate(from, { replace: true })
     } catch (e) {
       setMsg({
         type: "error",

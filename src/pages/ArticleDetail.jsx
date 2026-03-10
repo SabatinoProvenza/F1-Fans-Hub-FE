@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react"
-import { Link, useParams } from "react-router-dom"
-import Navbar from "../components/Navbar/Navbar"
-import Footer from "../components/Footer/Footer"
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom"
+import { BsHeart, BsHeartFill } from "react-icons/bs"
 
 const ArticleDetail = function () {
   const { id } = useParams()
+  const navigate = useNavigate()
+  const location = useLocation()
+
   const [article, setArticle] = useState(null)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -44,7 +46,9 @@ const ArticleDetail = function () {
     const token = localStorage.getItem("token")
 
     if (!token) {
-      setFavoriteMessage("Devi effettuare il login per salvare i preferiti")
+      navigate("/login", {
+        state: { from: location.pathname },
+      })
       return
     }
 
@@ -77,7 +81,7 @@ const ArticleDetail = function () {
 
       const savedArticle = await res.json()
       setArticle(savedArticle)
-      setFavoriteMessage("Articolo salvato nei preferiti")
+      setFavoriteMessage("Articolo salvato nei preferiti!")
     } catch (e) {
       setFavoriteMessage(e.message)
     } finally {
@@ -94,81 +98,85 @@ const ArticleDetail = function () {
     : ""
 
   return (
-    <>
-      <div className="container py-5 my-5 text-white">
-        <Link to="/" className="btn btn-primary rounded-pill px-4 mb-4 fw-bold">
-          ← Torna alla Home
-        </Link>
+    <div className="container py-5 my-5 text-white">
+      {loading && <p>Caricamento...</p>}
 
-        {loading && <p>Caricamento...</p>}
+      {!loading && error && (
+        <div>
+          <h1>Articolo non trovato</h1>
+          <p className="text-muted">L’articolo con id {id} non esiste.</p>
+          <Link className="btn btn-primary mt-3" to="/">
+            Torna alla Home
+          </Link>
+        </div>
+      )}
 
-        {!loading && error && (
-          <div>
-            <h1>Articolo non trovato</h1>
-            <p className="text-muted">L’articolo con id {id} non esiste.</p>
-            <Link className="btn btn-primary mt-3" to="/">
-              Torna alla Home
-            </Link>
+      {!loading && !error && article && (
+        <div className="mt-4">
+          <p className="text-muted fw-semibold mb-2">
+            {article.source} • {dateLabel}
+          </p>
+
+          <h1 className="display-5 fw-bold">{article.title}</h1>
+
+          <div className="mt-4 d-flex justify-content-center">
+            <img
+              src={article.image}
+              alt={article.title}
+              className="img-fluid rounded-4"
+              style={{ maxHeight: 520, objectFit: "cover" }}
+            />
           </div>
-        )}
 
-        {!loading && !error && article && (
-          <div className="mt-4">
-            <p className="text-muted fw-semibold mb-2">
-              {article.source} • {dateLabel}
-            </p>
-
-            <h1 className="display-5 fw-bold">{article.title}</h1>
-
-            <div className="mt-4 d-flex justify-content-center">
-              <img
-                src={article.image}
-                alt={article.title}
-                className="img-fluid rounded-4"
-                style={{ maxHeight: 520, objectFit: "cover" }}
-              />
-            </div>
-
-            <div className="mt-4 fs-5" style={{ lineHeight: 1.7 }}>
-              {article.description
-                .trim()
-                .split("\n")
-                .filter(Boolean)
-                .map((p, idx) => (
-                  <p key={idx}>{p}</p>
-                ))}
-            </div>
-
-            {favoriteMessage && (
-              <p className="mt-3 mb-0 text-primary">{favoriteMessage}</p>
-            )}
-
-            <div className="mt-4 d-flex gap-3">
-              <button
-                onClick={handleAddFavorite}
-                disabled={favoriteLoading || article.isFavorite}
-                className="btn btn-primary"
-              >
-                {favoriteLoading
-                  ? "Salvataggio..."
-                  : article.isFavorite
-                    ? "❤️ Nei preferiti"
-                    : "🤍 Aggiungi ai preferiti"}
-              </button>
-
-              <a
-                href={article.link}
-                target="_blank"
-                rel="noreferrer"
-                className="btn btn-outline-light"
-              >
-                Leggi alla fonte
-              </a>
-            </div>
+          <div className="mt-4 fs-5" style={{ lineHeight: 1.7 }}>
+            {article.description
+              .trim()
+              .split("\n")
+              .filter(Boolean)
+              .map((p, idx) => (
+                <p key={idx}>{p}</p>
+              ))}
           </div>
-        )}
-      </div>
-    </>
+
+          {favoriteMessage && (
+            <p className="mt-3 text-muted">{favoriteMessage}</p>
+          )}
+
+          <div className="mt-4 d-flex gap-3 align-items-center">
+            <button
+              onClick={handleAddFavorite}
+              disabled={favoriteLoading || article.isFavorite}
+              className={`btn rounded-pill px-4 fw-semibold d-flex align-items-center gap-2 ${
+                article.isFavorite ? "btn-light" : "btn-outline-light"
+              }`}
+            >
+              {favoriteLoading ? (
+                "Salvataggio..."
+              ) : article.isFavorite ? (
+                <>
+                  <BsHeartFill className="text-primary" />
+                  Nei preferiti
+                </>
+              ) : (
+                <>
+                  <BsHeart />
+                  Salva nei preferiti
+                </>
+              )}
+            </button>
+
+            <a
+              href={article.link}
+              target="_blank"
+              rel="noreferrer"
+              className="btn btn-outline-light rounded-pill px-4"
+            >
+              Leggi alla fonte
+            </a>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }
 
