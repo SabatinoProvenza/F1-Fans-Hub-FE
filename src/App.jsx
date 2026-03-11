@@ -5,6 +5,7 @@ import AuthPage from "./pages/AuthPage"
 import FavoritesPage from "./pages/FavoritesPage"
 import MainLayout from "./layout/MainLayout"
 import AuthLayout from "./layout/AuthLayout"
+import ProfilePage from "./pages/ProfilePage"
 
 function App() {
   return (
@@ -22,14 +23,7 @@ function App() {
             }
           />
           <Route path="/favorites" element={<FavoritesPage />} />
-          <Route
-            path="/profile"
-            element={
-              <div className="container my-5 py-5 text-white">
-                Profile (coming soon)
-              </div>
-            }
-          />
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
 
         <Route element={<AuthLayout />}>

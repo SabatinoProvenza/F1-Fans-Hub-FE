@@ -33,8 +33,8 @@ const HomePage = function () {
     load()
   }, [])
 
-  const breaking = articles.slice(0, 7)
-  const trending = articles.slice(7, 10)
+  const breaking = articles.slice(0, 30)
+  const trending = articles.slice(37, 40)
 
   return (
     <>

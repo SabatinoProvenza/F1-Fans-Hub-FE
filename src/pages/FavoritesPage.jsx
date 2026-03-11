@@ -87,7 +87,7 @@ const FavoritesPage = () => {
   return (
     <>
       <div className=" container py-5 text-white ">
-        <h1 className="my-5">I tuoi preferiti</h1>
+        <h1 className="my-5 text-center">I tuoi preferiti</h1>
 
         {favorites.length === 0 && (
           <p className="text-primary">Nessun articolo salvato.</p>
@@ -95,7 +95,7 @@ const FavoritesPage = () => {
 
         <div className="row g-4">
           {favorites.map((article) => (
-            <div className="col-md-4" key={article.id}>
+            <div className="col-md-6 col-lg-4" key={article.id}>
               <div className="card h-100 text-white border-0 d-flex flex-column">
                 <img
                   src={article.image}
@@ -112,7 +112,7 @@ const FavoritesPage = () => {
                   <div className="d-flex justify-content-between mt-auto">
                     <Link
                       to={`/articles/${article.id}`}
-                      className="btn bg-dark text-white mt-auto"
+                      className="btn btn-outline-light mt-auto"
                     >
                       Leggi articolo
                     </Link>
