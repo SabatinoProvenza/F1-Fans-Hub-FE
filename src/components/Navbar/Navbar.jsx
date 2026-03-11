@@ -1,41 +1,53 @@
 import styles from "../Navbar/Navbar.module.scss"
 import logo from "../../assets/F1.svg"
-import { Link, useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "../Context/AuthContext"
 
 const Navbar = function () {
   const { user, loading, logout } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+
+  const [isOpen, setIsOpen] = useState(false)
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsOpen(false)
+  }, [location])
 
   function handleLogout() {
     logout()
     navigate("/")
   }
 
+  function toggleNavbar() {
+    setIsOpen((prev) => !prev)
+  }
+
   return (
     <nav className={`navbar navbar-expand-md navbar-dark ${styles.navbar}`}>
       <div className="container">
-        <a className={`navbar-brand ${styles.brand}`} href="/">
+        <Link className={`navbar-brand ${styles.brand}`} to="/">
           <div className={styles.logoWrapper}>
             <img src={logo} alt="F1 Logo" className={styles.logo} />
             <span className={styles.brandText}>Fans Hub</span>
           </div>
-        </a>
+        </Link>
 
         <button
           className="navbar-toggler"
           type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#mainNavbar"
+          onClick={toggleNavbar}
           aria-controls="mainNavbar"
-          aria-expanded="false"
+          aria-expanded={isOpen}
           aria-label="Toggle navigation"
         >
           <span className="navbar-toggler-icon" />
         </button>
 
         <div
-          className={`collapse navbar-collapse ${styles.collapseMenu}`}
+          className={`collapse navbar-collapse ${isOpen ? "show" : ""} ${styles.collapseMenu}`}
           id="mainNavbar"
         >
           <div className="navbar-nav ms-auto gap-lg-4">
@@ -55,6 +67,7 @@ const Navbar = function () {
                   </Link>
 
                   <button
+                    type="button"
                     onClick={handleLogout}
                     className={`nav-link ${styles.link}`}
                   >

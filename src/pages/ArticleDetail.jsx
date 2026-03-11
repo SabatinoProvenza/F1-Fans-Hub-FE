@@ -11,7 +11,6 @@ const ArticleDetail = function () {
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(true)
   const [favoriteLoading, setFavoriteLoading] = useState(false)
-  const [favoriteMessage, setFavoriteMessage] = useState("")
 
   useEffect(() => {
     async function load() {
@@ -56,7 +55,6 @@ const ArticleDetail = function () {
 
     try {
       setFavoriteLoading(true)
-      setFavoriteMessage("")
 
       const res = await fetch("http://localhost:8080/favorites", {
         method: "POST",
@@ -81,9 +79,8 @@ const ArticleDetail = function () {
 
       const savedArticle = await res.json()
       setArticle(savedArticle)
-      setFavoriteMessage("Articolo salvato nei preferiti!")
     } catch (e) {
-      setFavoriteMessage(e.message)
+      console.error(e.message)
     } finally {
       setFavoriteLoading(false)
     }
@@ -137,10 +134,6 @@ const ArticleDetail = function () {
                 <p key={idx}>{p}</p>
               ))}
           </div>
-
-          {favoriteMessage && (
-            <p className="mt-3 text-muted">{favoriteMessage}</p>
-          )}
 
           <div className="mt-4 d-flex gap-3 align-items-center">
             <button

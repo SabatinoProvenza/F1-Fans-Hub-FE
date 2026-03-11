@@ -216,11 +216,15 @@ const ProfilePage = () => {
   }
 
   if (loading) {
-    return <p className="text-center mt-5">Caricamento profilo...</p>
+    return (
+      <p className="container text-center py-5 mt-5">Caricamento profilo...</p>
+    )
   }
 
   if (!user) {
-    return <p className="text-center mt-5">Utente non autenticato</p>
+    return (
+      <p className="container text-center py-5 mt-5">Utente non autenticato</p>
+    )
   }
 
   return (
