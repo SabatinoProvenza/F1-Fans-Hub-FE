@@ -8,18 +8,18 @@ const Hero = function () {
         <div className="row align-items-center g-5">
           {/* Testo */}
           <div className="col-12 col-lg-6">
-            <h1 className={styles.title}>Welcome to the Fast Lane</h1>
+            <h1 className={styles.title}>Benvenuti nella Fast Lane</h1>
 
             <p className={styles.subtitle}>
-              Stay updated with the latest Formula 1 news, race results, team
-              insights and driver stories.
+              Tutta l’adrenalina della Formula 1 in un unico hub. News,
+              risultati e discussioni per chi vive la velocità curva dopo curva.
             </p>
 
             <a
               href="#news"
-              className="btn btn-primary rounded-pill px-4 fw-bold"
+              className="btn btn-primary rounded-pill px-4 mt-3 fw-bold"
             >
-              Dive Into The Action
+              Salta all'azione
             </a>
           </div>
 

@@ -35,7 +35,7 @@ const ArticleRow = function ({ article, reverse = false }) {
               to={`/articles/${article.id}`}
               className="btn btn-primary mt-3"
             >
-              Read More
+              Scopri di più
             </Link>
           </div>
         </div>

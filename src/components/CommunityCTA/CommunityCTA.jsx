@@ -8,8 +8,8 @@ const CommunityCTA = function () {
         <p className={styles.kicker}>Formula 1 Fans Hub</p>
 
         <h2 className={styles.title}>
-          Join the conversation and <br />
-          share your thoughts!
+          Unisciti alla conversazione e <br />
+          condividi la tua esperienza!
         </h2>
 
         <Link to="/community" className={`btn btn-primary ${styles.ctaBtn}`}>

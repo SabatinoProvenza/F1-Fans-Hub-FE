@@ -4,9 +4,7 @@ import styles from "./TrendingSection.module.scss"
 const TrendingSection = function ({ articles }) {
   return (
     <section className={`container my-5 ${styles.section}`}>
-      <h2 className="display-4 fw-bold mb-5 text-uppercase">
-        Trending Topics in Formula 1
-      </h2>
+      <h2 className="display-4 fw-bold mb-5 text-uppercase">Trending Topics</h2>
 
       <div className="row g-4">
         {articles.map((topic) => (
