@@ -91,24 +91,16 @@
   }
 }
 
-.alert {
-  border-radius: 0.9rem;
-  padding: 0.85rem 1rem;
-  margin-bottom: 1rem;
-  border: 1px solid rgba(245, 245, 245, 0.12);
-  font-size: 0.95rem;
+.alertSuccess {
+  background: rgba(245, 245, 245, 0.06);
+  color: $brand-white;
+  border-color: rgba(245, 245, 245, 0.14);
 }
 
 .alertError {
-  background: rgba(225, 6, 0, 0.14);
-  border-color: rgba(225, 6, 0, 0.35);
+  background: rgba(225, 6, 0, 0.12);
   color: $brand-white;
-}
-
-.alertSuccess {
-  background: rgba(0, 226, 140, 0.12);
-  border-color: rgba(0, 226, 140, 0.25);
-  color: $brand-white;
+  border-color: rgba(225, 6, 0, 0.4);
 }
 
 .switch {

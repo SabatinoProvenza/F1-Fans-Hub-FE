@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import styles from "./AuthForm.module.scss"
 import { FiEye, FiEyeOff } from "react-icons/fi"
 import { useNavigate, useLocation } from "react-router-dom"
@@ -29,6 +29,17 @@ const AuthForm = function () {
   const [loading, setLoading] = useState(false)
   const [msg, setMsg] = useState({ type: "", text: "" })
   const [errors, setErrors] = useState([])
+
+  useEffect(() => {
+    if (msg.type !== "success" || mode !== "register") return
+
+    const timer = setTimeout(() => {
+      setMode("login")
+      clearMessages()
+    }, 3000)
+
+    return () => clearTimeout(timer)
+  }, [msg, mode])
 
   const resetForm = function () {
     setForm(initialForm)
@@ -144,24 +155,34 @@ const AuthForm = function () {
         return
       }
 
+      if (isRegister) {
+        setMsg({
+          type: "success",
+          text: "Registrazione completata con successo! Verrai reindirizzato al login...",
+        })
+
+        resetForm()
+        setErrors([])
+        return
+      }
+
       if (data?.token) {
         await login(data.token)
       }
 
       setMsg({
         type: "success",
-        text: isRegister
-          ? "Registrazione completata con successo!"
-          : "Login effettuato con successo!",
+        text: "Login effettuato con successo!",
       })
 
       resetForm()
       setErrors([])
       navigate(from, { replace: true })
     } catch (e) {
+      console.error(e)
       setMsg({
         type: "error",
-        text: console.error(e),
+        text: "Si è verificato un errore. Riprova.",
       })
     } finally {
       setLoading(false)
@@ -187,7 +208,6 @@ const AuthForm = function () {
               {msg.text && (
                 <div
                   className={[
-                    styles.alert,
                     msg.type === "success"
                       ? styles.alertSuccess
                       : styles.alertError,
