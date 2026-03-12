@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { useAuth } from "../components/Context/AuthContext"
 import ProfileCard from "../components/profile/ProfileCard"
+import { useNavigate } from "react-router-dom"
 
 const INITIAL_FORM_DATA = {
   username: "",
@@ -16,19 +17,31 @@ const INITIAL_PASSWORD_DATA = {
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 const ProfilePage = () => {
-  const { user, loading, fetchLoggedUser } = useAuth()
-
+  const { user, loading, fetchLoggedUser, logout } = useAuth()
+  const navigate = useNavigate()
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [editingField, setEditingField] = useState(null)
   const [formData, setFormData] = useState(INITIAL_FORM_DATA)
-  const [savingField, setSavingField] = useState(null)
-  const [uploadingImage, setUploadingImage] = useState(false)
   const [passwordData, setPasswordData] = useState(INITIAL_PASSWORD_DATA)
+  const [savingField, setSavingField] = useState(null)
   const [savingPassword, setSavingPassword] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const [deletingAccount, setDeletingAccount] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
 
   const inputRef = useRef(null)
   const fileInputRef = useRef(null)
+
+  const openDeleteModal = () => {
+    resetMessages()
+    setShowDeleteModal(true)
+  }
+
+  const closeDeleteModal = () => {
+    if (deletingAccount) return
+    setShowDeleteModal(false)
+  }
 
   useEffect(() => {
     if (!user) return
@@ -70,83 +83,44 @@ const ProfilePage = () => {
     })
   }
 
-  const handleChange = ({ target }) => {
-    const { name, value } = target
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
-  }
-
-  const handleEditClick = (field) => {
-    resetMessages()
-    setEditingField(field)
-  }
-
-  const handleCancel = () => {
-    resetMessages()
-    setEditingField(null)
-    resetFormData()
-  }
-
-  const handlePasswordChange = ({ target }) => {
-    const { name, value } = target
-
-    setPasswordData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
-  }
-
   const resetPasswordData = () => {
     setPasswordData(INITIAL_PASSWORD_DATA)
   }
 
-  const handleSavePassword = async () => {
-    setSavingPassword(true)
-    resetMessages()
+  const getToken = () => {
+    const token = localStorage.getItem("token")
 
+    if (!token) {
+      throw new Error("Sessione non valida. Effettua di nuovo il login.")
+    }
+
+    return token
+  }
+
+  const getErrorMessage = async (
+    response,
+    fallback = "Si è verificato un errore",
+  ) => {
     try {
-      const currentPassword = passwordData.currentPassword.trim()
-      const newPassword = passwordData.newPassword.trim()
-      const confirmPassword = passwordData.confirmPassword.trim()
+      const data = await response.json()
 
-      if (!currentPassword || !newPassword || !confirmPassword) {
-        throw new Error("Compila tutti i campi password")
+      if (Array.isArray(data?.errors) && data.errors.length > 0) {
+        return data.errors[0]
       }
 
-      if (newPassword.length < 6) {
-        throw new Error("La nuova password deve contenere almeno 6 caratteri")
+      return data?.message || fallback
+    } catch {
+      try {
+        const text = await response.text()
+        return text || fallback
+      } catch {
+        return fallback
       }
-
-      if (newPassword !== confirmPassword) {
-        throw new Error("Le password non coincidono")
-      }
-
-      await patchUserField("http://localhost:8080/auth/me/password", {
-        currentPassword,
-        newPassword,
-        confirmPassword,
-      })
-
-      setSuccess("Password aggiornata con successo")
-      resetPasswordData()
-      setEditingField(null)
-    } catch (err) {
-      console.error(err)
-      setError(err.message)
-    } finally {
-      setSavingPassword(false)
     }
   }
 
   const patchUserField = async (url, body, isFormData = false) => {
-    const token = localStorage.getItem("token")
-
-    if (!token) {
-      throw new Error("Token non trovato")
-    }
+    const token = getToken()
 
     const options = {
       method: "PATCH",
@@ -163,17 +137,48 @@ const ProfilePage = () => {
     const response = await fetch(url, options)
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => null)
-      throw new Error(errorData?.message || "Errore durante l'aggiornamento")
+      const message = await getErrorMessage(
+        response,
+        "Errore durante l'aggiornamento",
+      )
+      throw new Error(message)
     }
 
     return response
   }
 
+  const handleChange = ({ target }) => {
+    const { name, value } = target
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  const handlePasswordChange = ({ target }) => {
+    const { name, value } = target
+
+    setPasswordData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  const handleEditClick = (field) => {
+    resetMessages()
+    setEditingField(field)
+  }
+
+  const handleCancel = () => {
+    resetMessages()
+    setEditingField(null)
+    resetFormData()
+    resetPasswordData()
+  }
+
   const fieldConfig = {
     username: {
-      label: "Username",
-      type: "text",
       endpoint: "http://localhost:8080/auth/me/username",
       payloadKey: "username",
       successMessage: "Username aggiornato con successo",
@@ -184,8 +189,6 @@ const ProfilePage = () => {
       },
     },
     email: {
-      label: "Email",
-      type: "email",
       endpoint: "http://localhost:8080/auth/me/email",
       payloadKey: "email",
       successMessage: "Email aggiornata con successo",
@@ -211,7 +214,7 @@ const ProfilePage = () => {
 
     try {
       const newValue = formData[field].trim()
-      const currentValue = user[field] || ""
+      const currentValue = (user[field] || "").trim()
 
       config.validate(newValue)
 
@@ -230,9 +233,53 @@ const ProfilePage = () => {
       setEditingField(null)
     } catch (err) {
       console.error(err)
-      setError(err.message)
+      setError(err.message || "Errore durante il salvataggio")
     } finally {
       setSavingField(null)
+    }
+  }
+
+  const handleSavePassword = async () => {
+    setSavingPassword(true)
+    resetMessages()
+
+    try {
+      const currentPassword = passwordData.currentPassword.trim()
+      const newPassword = passwordData.newPassword.trim()
+      const confirmPassword = passwordData.confirmPassword.trim()
+
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        throw new Error("Compila tutti i campi password")
+      }
+
+      if (newPassword.length < 6) {
+        throw new Error("La nuova password deve contenere almeno 6 caratteri")
+      }
+
+      if (newPassword !== confirmPassword) {
+        throw new Error("Le password non coincidono")
+      }
+
+      if (currentPassword === newPassword) {
+        throw new Error(
+          "La nuova password deve essere diversa da quella attuale",
+        )
+      }
+
+      await patchUserField("http://localhost:8080/auth/me/password", {
+        currentPassword,
+        newPassword,
+        confirmPassword,
+      })
+
+      setSuccess("Password aggiornata con successo")
+      resetPasswordData()
+      setEditingField(null)
+    } catch (err) {
+      console.error(err)
+      setError(err.message || "Errore durante l'aggiornamento della password")
+    } finally {
+      setSavingPassword(false)
     }
   }
 
@@ -267,10 +314,44 @@ const ProfilePage = () => {
       setSuccess("Immagine profilo aggiornata con successo")
     } catch (err) {
       console.error(err)
-      setError(err.message)
+      setError(err.message || "Errore durante il caricamento dell'immagine")
     } finally {
       setUploadingImage(false)
       e.target.value = ""
+    }
+  }
+
+  const handleDeleteAccount = async () => {
+    setDeletingAccount(true)
+    resetMessages()
+
+    try {
+      const token = getToken()
+
+      const response = await fetch("http://localhost:8080/auth/me", {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (!response.ok) {
+        const message = await getErrorMessage(
+          response,
+          "Errore durante l'eliminazione dell'account",
+        )
+        throw new Error(message)
+      }
+
+      setShowDeleteModal(false)
+      await logout()
+      navigate("/")
+    } catch (err) {
+      console.error(err)
+      setError(err.message || "Errore durante l'eliminazione dell'account")
+      setShowDeleteModal(false)
+    } finally {
+      setDeletingAccount(false)
     }
   }
 
@@ -300,6 +381,8 @@ const ProfilePage = () => {
         savingField={savingField}
         savingPassword={savingPassword}
         uploadingImage={uploadingImage}
+        deletingAccount={deletingAccount}
+        showDeleteModal={showDeleteModal}
         inputRef={inputRef}
         fileInputRef={fileInputRef}
         onChange={handleChange}
@@ -310,6 +393,9 @@ const ProfilePage = () => {
         onSavePassword={handleSavePassword}
         onImageButtonClick={handleImageButtonClick}
         onImageUpload={handleImageUpload}
+        onOpenDeleteModal={openDeleteModal}
+        onCloseDeleteModal={closeDeleteModal}
+        onDeleteAccount={handleDeleteAccount}
       />
     </div>
   )
