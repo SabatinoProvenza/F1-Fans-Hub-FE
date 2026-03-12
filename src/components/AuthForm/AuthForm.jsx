@@ -144,8 +144,10 @@ const AuthForm = function () {
       const data = await response.json().catch(() => null)
 
       if (!response.ok) {
-        if (data?.errors && Array.isArray(data.errors)) {
+        if (isRegister && data?.errors && Array.isArray(data.errors)) {
           setErrors(data.errors)
+        } else {
+          setErrors([])
         }
 
         setMsg({

@@ -7,6 +7,12 @@ const INITIAL_FORM_DATA = {
   email: "",
 }
 
+const INITIAL_PASSWORD_DATA = {
+  currentPassword: "",
+  newPassword: "",
+  confirmPassword: "",
+}
+
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 const ProfilePage = () => {
@@ -16,6 +22,8 @@ const ProfilePage = () => {
   const [formData, setFormData] = useState(INITIAL_FORM_DATA)
   const [savingField, setSavingField] = useState(null)
   const [uploadingImage, setUploadingImage] = useState(false)
+  const [passwordData, setPasswordData] = useState(INITIAL_PASSWORD_DATA)
+  const [savingPassword, setSavingPassword] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
 
@@ -80,6 +88,57 @@ const ProfilePage = () => {
     resetMessages()
     setEditingField(null)
     resetFormData()
+  }
+
+  const handlePasswordChange = ({ target }) => {
+    const { name, value } = target
+
+    setPasswordData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  const resetPasswordData = () => {
+    setPasswordData(INITIAL_PASSWORD_DATA)
+  }
+
+  const handleSavePassword = async () => {
+    setSavingPassword(true)
+    resetMessages()
+
+    try {
+      const currentPassword = passwordData.currentPassword.trim()
+      const newPassword = passwordData.newPassword.trim()
+      const confirmPassword = passwordData.confirmPassword.trim()
+
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        throw new Error("Compila tutti i campi password")
+      }
+
+      if (newPassword.length < 6) {
+        throw new Error("La nuova password deve contenere almeno 6 caratteri")
+      }
+
+      if (newPassword !== confirmPassword) {
+        throw new Error("Le password non coincidono")
+      }
+
+      await patchUserField("http://localhost:8080/auth/me/password", {
+        currentPassword,
+        newPassword,
+        confirmPassword,
+      })
+
+      setSuccess("Password aggiornata con successo")
+      resetPasswordData()
+      setEditingField(null)
+    } catch (err) {
+      console.error(err)
+      setError(err.message)
+    } finally {
+      setSavingPassword(false)
+    }
   }
 
   const patchUserField = async (url, body, isFormData = false) => {
@@ -236,15 +295,19 @@ const ProfilePage = () => {
         error={error}
         success={success}
         formData={formData}
+        passwordData={passwordData}
         editingField={editingField}
         savingField={savingField}
+        savingPassword={savingPassword}
         uploadingImage={uploadingImage}
         inputRef={inputRef}
         fileInputRef={fileInputRef}
         onChange={handleChange}
+        onPasswordChange={handlePasswordChange}
         onEditClick={handleEditClick}
         onCancel={handleCancel}
         onSaveField={handleSaveField}
+        onSavePassword={handleSavePassword}
         onImageButtonClick={handleImageButtonClick}
         onImageUpload={handleImageUpload}
       />
