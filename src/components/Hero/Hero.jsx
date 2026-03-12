@@ -4,7 +4,7 @@ import heroImage from "../../assets/f1-image1.avif"
 const Hero = function () {
   return (
     <section className={styles.hero}>
-      <div className="container">
+      <div className="container page-enter">
         <div className="row align-items-center g-5">
           {/* Testo */}
           <div className="col-12 col-lg-6">

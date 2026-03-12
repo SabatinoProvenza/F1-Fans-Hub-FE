@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom"
 import { BsHeart, BsHeartFill } from "react-icons/bs"
+import LoadingSpinner from "../components/Spinner/LoadingSpinner"
 
 const ArticleDetail = function () {
   const { id } = useParams()
@@ -95,8 +96,8 @@ const ArticleDetail = function () {
     : ""
 
   return (
-    <div className="container py-5 my-5 text-white">
-      {loading && <p>Caricamento...</p>}
+    <div className="container py-5 my-5 text-white page-enter">
+      {loading && <LoadingSpinner />}
 
       {!loading && error && (
         <div>

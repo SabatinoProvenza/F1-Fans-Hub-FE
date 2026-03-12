@@ -5,7 +5,55 @@
 // CSS globale
 body {
   background-color: $brand-dark;
+  font-family: "Poppins", sans-serif;
 }
 .section {
   padding: 5rem 0;
+}
+@media (max-width: 768px) {
+  .container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+  .card-body {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+  .article-img {
+    height: 1rem;
+  }
+}
+.page-enter {
+  animation: fadeSlide 0.5s ease;
+}
+
+.article-card {
+  overflow: hidden;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+
+  img {
+    transition: transform 0.35s ease;
+  }
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+
+    img {
+      transform: scale(1.05);
+    }
+  }
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

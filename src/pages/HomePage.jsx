@@ -1,8 +1,10 @@
+import BackToTopButton from "../components/BackToTopButton/BackToTopButton"
 import CommunityCTA from "../components/CommunityCTA/CommunityCTA"
 
 import Hero from "../components/Hero/Hero"
 
 import NewsSection from "../components/NewsSection"
+import LoadingSpinner from "../components/Spinner/LoadingSpinner"
 import TrendingSection from "../components/TrendingSection/TrendingSection"
 import { useState, useEffect } from "react"
 
@@ -40,9 +42,7 @@ const HomePage = function () {
     <>
       <Hero />
       <section id="news" className="section">
-        {loading && (
-          <p className="container py-5 text-white">Caricamento news...</p>
-        )}
+        {loading && <LoadingSpinner />}
         {error && <p className="container py-5 text-white">Errore: {error}</p>}
         {!loading && !error && <NewsSection articles={breaking} />}
       </section>
@@ -54,6 +54,7 @@ const HomePage = function () {
       <section className="section">
         <CommunityCTA />
       </section>
+      <BackToTopButton />
     </>
   )
 }

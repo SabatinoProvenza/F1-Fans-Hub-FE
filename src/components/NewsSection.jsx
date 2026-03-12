@@ -3,7 +3,7 @@ import ArticleRow from "../components/ArticleRaw/ArticleRaw"
 const NewsSection = function ({ articles }) {
   return (
     <section>
-      <div className="container">
+      <div className="container page-enter">
         <h2 className="display-5 fw-bold mb-4">BREAKING NEWS </h2>
       </div>
 

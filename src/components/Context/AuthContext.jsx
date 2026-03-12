@@ -52,9 +52,7 @@ const AuthProvider = function ({ children }) {
     fetchLoggedUser()
   }, [])
 
-  useEffect(() => {
-    console.log("USER CONTEXT:", user)
-  }, [user])
+  useEffect(() => {}, [user])
 
   return (
     <AuthContext.Provider

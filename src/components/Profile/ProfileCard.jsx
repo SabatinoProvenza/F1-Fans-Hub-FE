@@ -1,8 +1,8 @@
 import EditableField from "./EditableField"
-import EditablePasswordField from "./EditablePasswordField"
 import { Button, Modal } from "react-bootstrap"
 import ProfileImageSection from "./ProfileImageSection"
 import ProfileInfoBox from "./ProfileInfoBox"
+import EditablePasswordField from "./EditablePassword"
 
 const ProfileCard = ({
   user,
@@ -93,7 +93,7 @@ const ProfileCard = ({
           />
 
           <div className="mt-4 pt-4 border-top text-start">
-            <h5 className="text-danger mb-2">ZONA PERICOLOSA</h5>
+            <h5 className="text-danger mb-2">ZONA DI FRENATA</h5>
             <p className="small mb-3">
               Eliminando l'account perderai definitivamente il profilo e i
               preferiti salvati.
@@ -115,7 +115,11 @@ const ProfileCard = ({
           centered
           contentClassName="bg-dark text-white"
         >
-          <Modal.Header closeButton>
+          <Modal.Header
+            closeButton
+            closeVariant="white"
+            className="border-secondary"
+          >
             <Modal.Title>Eliminare l'account?</Modal.Title>
           </Modal.Header>
 
@@ -124,7 +128,7 @@ const ProfileCard = ({
             e rimuoverà anche i tuoi articoli preferiti salvati.
           </Modal.Body>
 
-          <Modal.Footer>
+          <Modal.Footer className="border-secondary">
             <Button
               variant="secondary"
               onClick={onCloseDeleteModal}

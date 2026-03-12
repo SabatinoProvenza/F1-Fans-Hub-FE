@@ -13,7 +13,7 @@ const ArticleRow = function ({ article, reverse = false }) {
         className={`row align-items-center g-4 ${reverse ? "flex-lg-row-reverse" : ""}`}
       >
         {/* Immagine */}
-        <div className="col-12 col-lg-7">
+        <div className="col-12 col-lg-7 article-card">
           <div className={styles.imageWrap}>
             <img
               src={article.image}
@@ -24,7 +24,7 @@ const ArticleRow = function ({ article, reverse = false }) {
         </div>
 
         {/* Testo */}
-        <div className="col-12 col-lg-5">
+        <div className="col-12 col-lg-5 article-card">
           <div className={styles.textBox}>
             <h3 className="mb-3">{article.title}</h3>
 

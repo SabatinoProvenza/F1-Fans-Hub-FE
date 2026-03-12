@@ -17,7 +17,9 @@ const Footer = function () {
       <div className="container">
         <div className={styles.inner}>
           <div className={styles.left}>
-            <span className={styles.brand}>F1 Fans Hub</span>
+            <Link to="/" className={styles.link}>
+              <span className={styles.brand}>F1 Fans Hub</span>
+            </Link>
           </div>
 
           <div className={styles.center}>

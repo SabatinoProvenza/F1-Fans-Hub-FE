@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
+import LoadingSpinner from "../components/Spinner/LoadingSpinner"
 
 const FavoritesPage = () => {
   const [favorites, setFavorites] = useState([])
@@ -79,14 +80,13 @@ const FavoritesPage = () => {
     }
   }
 
-  if (loading)
-    return <p className="container my-5 py-5  text-white">Caricamento...</p>
+  if (loading) return <LoadingSpinner />
 
   if (error) return <p className="container my-5 py-5 text-primary">{error}</p>
 
   return (
     <>
-      <div className=" container py-5 text-white ">
+      <div className=" container py-5 text-white page-enter ">
         <h1 className="my-5 text-center">I tuoi preferiti</h1>
 
         {favorites.length === 0 && (
@@ -96,7 +96,7 @@ const FavoritesPage = () => {
         <div className="row g-4">
           {favorites.map((article) => (
             <div className="col-md-6 col-lg-4" key={article.id}>
-              <div className="card h-100 text-white border-0 d-flex flex-column">
+              <div className="card article-card h-100 text-white border-0 d-flex flex-column">
                 <img
                   src={article.image}
                   className="card-img-top"
@@ -135,7 +135,11 @@ const FavoritesPage = () => {
         centered
         contentClassName="bg-dark text-white"
       >
-        <Modal.Header closeButton>
+        <Modal.Header
+          closeButton
+          closeVariant="white"
+          className="border-secondary"
+        >
           <Modal.Title>Rimuovere dai preferiti?</Modal.Title>
         </Modal.Header>
 
@@ -143,7 +147,7 @@ const FavoritesPage = () => {
           Vuoi davvero rimuovere l'articolo dai preferiti?
         </Modal.Body>
 
-        <Modal.Footer>
+        <Modal.Footer className="border-secondary">
           <Button variant="secondary" onClick={closeRemoveModal}>
             Annulla
           </Button>

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react"
 import { useAuth } from "../components/Context/AuthContext"
-import ProfileCard from "../components/profile/ProfileCard"
+import ProfileCard from "../components/Profile/ProfileCard"
 import { useNavigate } from "react-router-dom"
+import LoadingSpinner from "../components/Spinner/LoadingSpinner"
 
 const INITIAL_FORM_DATA = {
   username: "",
@@ -356,9 +357,7 @@ const ProfilePage = () => {
   }
 
   if (loading) {
-    return (
-      <p className="container text-center py-5 mt-5">Caricamento profilo...</p>
-    )
+    return <LoadingSpinner />
   }
 
   if (!user) {
@@ -368,7 +367,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="container py-5">
+    <div className="container py-5 page-enter">
       <h1 className="my-3 py-5 text-center">Il mio profilo</h1>
 
       <ProfileCard
