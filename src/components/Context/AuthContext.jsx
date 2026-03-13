@@ -16,7 +16,7 @@ const AuthProvider = function ({ children }) {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/auth/me", {
+      const response = await fetch("http://localhost:8080/users/me", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
