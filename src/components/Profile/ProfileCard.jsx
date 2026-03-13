@@ -30,6 +30,11 @@ const ProfileCard = ({
   onCloseDeleteModal,
   onDeleteAccount,
 }) => {
+  const truncateText = (text, maxLength = 20) => {
+    if (!text) return ""
+    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text
+  }
+
   return (
     <div className="row justify-content-center">
       <div className="col-12 col-md-8 col-lg-6">
@@ -72,7 +77,7 @@ const ProfileCard = ({
             name="email"
             type="email"
             value={formData.email}
-            displayValue={user.email}
+            displayValue={truncateText(user.email, 12)}
             isEditing={editingField === "email"}
             isSaving={savingField === "email"}
             inputRef={inputRef}

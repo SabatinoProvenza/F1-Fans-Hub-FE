@@ -6,6 +6,7 @@ import FavoritesPage from "./pages/FavoritesPage"
 import MainLayout from "./layout/MainLayout"
 import AuthLayout from "./layout/AuthLayout"
 import ProfilePage from "./pages/ProfilePage"
+import NotFound from "./pages/NotFound"
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
 
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<AuthPage />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </BrowserRouter>
