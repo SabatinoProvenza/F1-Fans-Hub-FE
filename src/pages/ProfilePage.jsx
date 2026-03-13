@@ -180,7 +180,7 @@ const ProfilePage = () => {
 
   const fieldConfig = {
     username: {
-      endpoint: "http://localhost:8080/auth/me/username",
+      endpoint: "http://localhost:8080//users/me/username",
       payloadKey: "username",
       successMessage: "Username aggiornato con successo",
       validate: (value) => {
@@ -190,7 +190,7 @@ const ProfilePage = () => {
       },
     },
     email: {
-      endpoint: "http://localhost:8080/auth/me/email",
+      endpoint: "http://localhost:8080/users/me/email",
       payloadKey: "email",
       successMessage: "Email aggiornata con successo",
       validate: (value) => {
@@ -267,7 +267,7 @@ const ProfilePage = () => {
         )
       }
 
-      await patchUserField("http://localhost:8080/auth/me/password", {
+      await patchUserField("http://localhost:8080/users/me/password", {
         currentPassword,
         newPassword,
         confirmPassword,
@@ -306,7 +306,7 @@ const ProfilePage = () => {
       imageFormData.append("image", file)
 
       await patchUserField(
-        "http://localhost:8080/auth/me/image",
+        "http://localhost:8080/users/me/image",
         imageFormData,
         true,
       )
@@ -329,7 +329,7 @@ const ProfilePage = () => {
     try {
       const token = getToken()
 
-      const response = await fetch("http://localhost:8080/auth/me", {
+      const response = await fetch("http://localhost:8080/users/me", {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

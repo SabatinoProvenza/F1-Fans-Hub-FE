@@ -18,7 +18,7 @@ const ArticleDetail = function () {
       try {
         const token = localStorage.getItem("token")
         const url = token
-          ? `http://localhost:8080/api/me/news/${id}`
+          ? `http://localhost:8080/users/me/news/${id}`
           : `http://localhost:8080/api/news/${id}`
 
         const res = await fetch(url, {

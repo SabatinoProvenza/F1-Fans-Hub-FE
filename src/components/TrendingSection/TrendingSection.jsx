@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom"
 import styles from "./TrendingSection.module.scss"
+import { FaArrowRight } from "react-icons/fa"
 
 const TrendingSection = function ({ articles }) {
   return (
@@ -14,7 +15,7 @@ const TrendingSection = function ({ articles }) {
               <p className={styles.cardDescription}>{topic.description}</p>
 
               <Link to={`/articles/${topic.id}`} className={styles.arrowBtn}>
-                →
+                <FaArrowRight />
               </Link>
             </div>
           </div>
