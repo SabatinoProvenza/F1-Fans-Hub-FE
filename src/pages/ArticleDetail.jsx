@@ -4,7 +4,7 @@ import { BsHeart, BsHeartFill } from "react-icons/bs"
 import LoadingSpinner from "../components/Spinner/LoadingSpinner"
 
 const ArticleDetail = function () {
-  const { id } = useParams()
+  const { guid, articleId } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -17,9 +17,18 @@ const ArticleDetail = function () {
     async function load() {
       try {
         const token = localStorage.getItem("token")
-        const url = token
-          ? `http://localhost:8080/users/me/news/${id}`
-          : `http://localhost:8080/api/news/${id}`
+
+        let url = ""
+
+        if (articleId) {
+          url = `http://localhost:8080/users/me/articles/${articleId}`
+        } else if (guid) {
+          url = token
+            ? `http://localhost:8080/users/me/news/${guid}`
+            : `http://localhost:8080/api/news/${guid}`
+        } else {
+          throw new Error("Identificatore articolo mancante")
+        }
 
         const res = await fetch(url, {
           headers: token
@@ -29,7 +38,22 @@ const ArticleDetail = function () {
             : {},
         })
 
-        if (!res.ok) throw new Error("Articolo non trovato")
+        if (res.status === 401) {
+          throw new Error("Devi effettuare il login")
+        }
+
+        if (res.status === 403) {
+          throw new Error("Non sei autorizzato")
+        }
+
+        if (res.status === 404) {
+          throw new Error("Articolo non trovato")
+        }
+
+        if (!res.ok) {
+          throw new Error("Errore nel caricamento dell'articolo")
+        }
+
         const data = await res.json()
         setArticle(data)
       } catch (e) {
@@ -40,7 +64,7 @@ const ArticleDetail = function () {
     }
 
     load()
-  }, [id])
+  }, [guid, articleId])
 
   const handleAddFavorite = async () => {
     const token = localStorage.getItem("token")
@@ -102,7 +126,7 @@ const ArticleDetail = function () {
       {!loading && error && (
         <div>
           <h1>Articolo non trovato</h1>
-          <p className="text-muted">L’articolo con id {id} non esiste.</p>
+          <p className="text-muted">L’articolo che hai cercato non esiste.</p>
           <Link className="btn btn-primary mt-3" to="/">
             Torna alla Home
           </Link>

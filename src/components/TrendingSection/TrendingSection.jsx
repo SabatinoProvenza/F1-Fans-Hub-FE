@@ -9,12 +9,12 @@ const TrendingSection = function ({ articles }) {
 
       <div className="row g-4">
         {articles.map((topic) => (
-          <div key={topic.id} className="col-12 col-md-6 col-lg-4">
+          <div key={topic.guid} className="col-12 col-md-6 col-lg-4">
             <div className={styles.card}>
               <h4 className={`mb-4 ${styles.cardTitle}`}>{topic.title}</h4>
               <p className={styles.cardDescription}>{topic.description}</p>
 
-              <Link to={`/articles/${topic.id}`} className={styles.arrowBtn}>
+              <Link to={`/news/${topic.guid}`} className={styles.arrowBtn}>
                 <FaArrowRight />
               </Link>
             </div>

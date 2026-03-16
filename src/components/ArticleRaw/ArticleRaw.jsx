@@ -31,10 +31,7 @@ const ArticleRow = function ({ article, reverse = false }) {
             <p className="text-muted fw-semibold mb-2">{article.source}</p>
             <p className="mb-0">{truncate(article.description)}</p>
 
-            <Link
-              to={`/articles/${article.id}`}
-              className="btn btn-primary mt-3"
-            >
+            <Link to={`/news/${article.guid}`} className="btn btn-primary mt-3">
               Scopri di più
             </Link>
           </div>

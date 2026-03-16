@@ -55,25 +55,30 @@ const FavoritesPage = () => {
   }, [])
 
   const handleRemoveFavorite = async () => {
-    const articleId = selectedArticle.id
+    const articleGuid = selectedArticle.guid
     const token = localStorage.getItem("token")
 
     if (!token || !selectedArticle) return
 
     try {
-      const res = await fetch(`http://localhost:8080/favorites/${articleId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const res = await fetch(
+        `http://localhost:8080/favorites/${articleGuid}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      })
+      )
 
       if (!res.ok) {
         throw new Error("Errore nella rimozione dai preferiti")
       }
 
       // aggiorna la lista locale
-      setFavorites((prev) => prev.filter((article) => article.id !== articleId))
+      setFavorites((prev) =>
+        prev.filter((article) => article.guid !== articleGuid),
+      )
       closeRemoveModal()
     } catch (error) {
       console.error(error)
@@ -95,7 +100,7 @@ const FavoritesPage = () => {
 
         <div className="row g-4">
           {favorites.map((article) => (
-            <div className="col-md-6 col-lg-4" key={article.id}>
+            <div className="col-md-6 col-lg-4" key={article.articleId}>
               <div className="card article-card h-100 text-white border-0 d-flex flex-column">
                 <img
                   src={article.image}
@@ -111,7 +116,7 @@ const FavoritesPage = () => {
 
                   <div className="d-flex justify-content-between mt-auto">
                     <Link
-                      to={`/articles/${article.id}`}
+                      to={`/articles/${article.articleId}`}
                       className="btn btn-outline-light mt-auto"
                     >
                       Leggi articolo

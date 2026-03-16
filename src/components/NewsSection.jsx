@@ -9,7 +9,7 @@ const NewsSection = function ({ articles }) {
 
       {articles.map((a, index) => (
         <ArticleRow
-          key={a.id}
+          key={a.guid}
           article={a}
           reverse={index % 2 === 1} // alterna: 0 normale, 1 reverse, 2 normale...
         />
