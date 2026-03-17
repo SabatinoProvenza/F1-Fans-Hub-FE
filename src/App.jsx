@@ -7,6 +7,7 @@ import MainLayout from "./layout/MainLayout"
 import AuthLayout from "./layout/AuthLayout"
 import ProfilePage from "./pages/ProfilePage"
 import NotFound from "./pages/NotFound"
+import CommunityPage from "./pages/CommunityPage"
 
 function App() {
   return (
@@ -16,14 +17,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/news/:guid" element={<ArticleDetail />} />
           <Route path="articles/:articleId" element={<ArticleDetail />} />
-          <Route
-            path="/community"
-            element={
-              <div className="container my-5 py-5 text-white">
-                Community (coming soon)
-              </div>
-            }
-          />
+          <Route path="/community" element={<CommunityPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
           <Route path="/profile" element={<ProfilePage />} />
         </Route>
