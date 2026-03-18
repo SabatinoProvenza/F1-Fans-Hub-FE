@@ -1,0 +1,192 @@
+@use "../../styles/variables" as *;
+
+.community-page {
+  color: $brand-white;
+}
+
+.community-title {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.community-form,
+.community-post {
+  background-color: $brand-dark-2;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+}
+
+.community-post {
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.community-textarea,
+.community-input {
+  background-color: $brand-dark;
+  color: $brand-white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.85rem;
+  padding: 0.85rem 1rem;
+
+  &::placeholder {
+    color: $brand-muted;
+  }
+
+  &:focus {
+    background-color: $brand-dark;
+    color: $brand-white;
+    border-color: rgba(225, 6, 0, 0.8);
+    box-shadow: 0 0 0 0.2rem rgba(225, 6, 0, 0.18);
+  }
+}
+
+.community-avatar {
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+
+  &--sm {
+    width: 32px;
+    height: 32px;
+  }
+
+  &--md {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+.community-post-header h6,
+.community-comment-user {
+  color: $brand-white;
+  font-weight: 600;
+}
+
+.community-date {
+  color: $brand-muted;
+}
+
+.community-post-content,
+.community-comment-content {
+  color: $brand-white;
+  line-height: 1.65;
+  word-break: break-word;
+}
+
+.community-preview,
+.community-post-image-wrapper {
+  overflow: hidden;
+  border-radius: 0.9rem;
+  background-color: $brand-dark;
+}
+
+.community-preview-image {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  display: block;
+}
+
+.community-post-image {
+  width: 100%;
+  max-height: 60vh;
+  object-fit: cover;
+  display: block;
+}
+
+.community-post-image-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.community-icon-btn {
+  color: $brand-white;
+  border-radius: 50%;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  &.danger:hover {
+    background-color: rgba(225, 6, 0, 0.14);
+    color: $brand-red;
+  }
+}
+
+.community-remove-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background-color: rgba(225, 6, 0, 0.92);
+
+  &:hover {
+    background-color: $brand-red;
+  }
+}
+
+.community-actions {
+  padding-top: 0.25rem;
+}
+
+.community-action-btn {
+  border-radius: 999px;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  &.is-liked {
+    border-color: $brand-red;
+    color: $brand-red;
+    background-color: rgba(225, 6, 0, 0.08);
+  }
+}
+
+.community-comments {
+  border-top-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.community-comment {
+  background-color: #141414;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0.9rem;
+}
+
+.community-empty,
+.community-muted-text {
+  color: $brand-muted;
+}
+
+.community-pagination {
+  margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+  .community-post-image {
+    max-height: 42vh;
+  }
+
+  .community-action-btn {
+    justify-content: center;
+  }
+}

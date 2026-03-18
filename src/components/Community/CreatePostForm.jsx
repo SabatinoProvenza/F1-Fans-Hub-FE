@@ -1,4 +1,5 @@
 import { TbXboxX } from "react-icons/tb"
+import "./Community.scss"
 
 const CreatePostForm = ({
   user,
@@ -14,11 +15,11 @@ const CreatePostForm = ({
   onRemoveImage,
 }) => {
   return (
-    <div className="card mb-5 text-white border-secondary">
+    <div className="community-form card mb-5 text-white">
       <div className="card-body">
         <form onSubmit={onSubmit}>
           <textarea
-            className="form-control mb-3 bg-dark text-white border-secondary"
+            className="community-textarea form-control mb-3"
             rows="3"
             placeholder={
               user
@@ -30,11 +31,11 @@ const CreatePostForm = ({
           />
 
           {previewUrl && (
-            <div className="position-relative mb-3">
+            <div className="community-preview position-relative mb-3">
               <img
                 src={previewUrl}
                 alt="preview"
-                className="img-fluid rounded"
+                className="img-fluid community-preview-image"
                 style={{
                   maxHeight: "300px",
                   width: "100%",
@@ -43,7 +44,7 @@ const CreatePostForm = ({
               />
               <button
                 type="button"
-                className="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 border-0"
+                className="community-remove-btn btn btn-danger btn-sm position-absolute top-0 end-0 m-2 border-0"
                 onClick={onRemoveImage}
               >
                 <TbXboxX className="fs-4" />

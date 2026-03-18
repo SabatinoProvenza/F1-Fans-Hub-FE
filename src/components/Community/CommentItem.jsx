@@ -1,4 +1,5 @@
 import { TbEdit, TbXboxX } from "react-icons/tb"
+import "./Community.scss"
 
 const CommentItem = ({
   comment,
@@ -14,13 +15,13 @@ const CommentItem = ({
   onDelete,
 }) => {
   return (
-    <div className="bg-black rounded p-3 border border-secondary">
+    <div className="community-comment rounded p-3 border-0">
       <div className="d-flex justify-content-between align-items-start gap-3 mb-2">
         <div className="d-flex align-items-center gap-2">
           <img
             src={comment.userImage}
             alt={comment.username}
-            className="rounded-circle"
+            className="community-avatar community-avatar--sm rounded-circle"
             style={{
               width: "32px",
               height: "32px",
@@ -28,8 +29,10 @@ const CommentItem = ({
             }}
           />
           <div>
-            <div className="fw-semibold">{comment.username}</div>
-            <small className="text-muted">
+            <div className="community-comment-user fw-semibold">
+              {comment.username}
+            </div>
+            <small className="community-date">
               {comment.createdAt
                 ? new Date(comment.createdAt).toLocaleString("it-IT")
                 : "Data non disponibile"}
@@ -41,7 +44,7 @@ const CommentItem = ({
           <div className="d-flex gap-2 align-items-center flex-shrink-0">
             <button
               type="button"
-              className="btn btn-sm btn-outline-light border-0 p-1"
+              className="community-icon-btn btn btn-sm btn-outline-light border-0 p-1"
               onClick={() => onStartEditing(comment)}
             >
               <TbEdit className="fs-5" />
@@ -49,7 +52,7 @@ const CommentItem = ({
 
             <button
               type="button"
-              className="btn btn-sm btn-outline-danger border-0 p-1"
+              className="community-icon-btn danger btn btn-sm btn-outline-danger border-0 p-1"
               onClick={() => onDelete(comment)}
               disabled={deletingCommentId === comment.id}
             >
@@ -62,7 +65,7 @@ const CommentItem = ({
       {isEditing ? (
         <div>
           <textarea
-            className="form-control mb-2 bg-dark text-white border-secondary"
+            className="community-textarea form-control mb-2 text-white border-secondary"
             rows="2"
             value={editCommentContent}
             onChange={(e) => setEditCommentContent(e.target.value)}
@@ -88,7 +91,7 @@ const CommentItem = ({
           </div>
         </div>
       ) : (
-        <p className="mb-0">{comment.content}</p>
+        <p className="mb-0 community-comment-content">{comment.content}</p>
       )}
     </div>
   )

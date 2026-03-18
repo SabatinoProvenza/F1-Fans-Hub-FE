@@ -18,6 +18,7 @@ import {
 import DeleteConfirmModal from "../components/Community/DeleteConfirmModal"
 import CreatePostForm from "../components/Community/CreatePostForm"
 import CommentItem from "../components/Community/CommentItem"
+import "../components/Community/Community.scss"
 
 const CommunityPage = () => {
   const { user } = useAuth()
@@ -510,8 +511,8 @@ const CommunityPage = () => {
 
   return (
     <>
-      <div className="container py-5 text-white page-enter">
-        <h1 className="my-5 text-center">Community</h1>
+      <div className="community-page container py-5 text-white page-enter">
+        <h1 className="community-title my-5 text-center">Community</h1>
 
         <CreatePostForm
           user={user}
@@ -528,34 +529,26 @@ const CommunityPage = () => {
         />
 
         {posts.length === 0 ? (
-          <p className="text-primary">Nessun post disponibile.</p>
+          <p className="community-empty">Nessun post disponibile.</p>
         ) : (
-          <div className="d-flex flex-column gap-4">
+          <div className=" d-flex flex-column gap-4">
             {posts.map((post) => {
               const isEditing = editingPostId === post.id
 
               return (
-                <div
-                  key={post.id}
-                  className="card bg-dark text-white border-secondary shadow-sm"
-                >
+                <div key={post.id} className="community-post card shadow-sm">
                   <div className="card-body">
                     <div className="d-flex justify-content-between align-items-start gap-3 mb-3">
                       <div className="d-flex align-items-center gap-3">
                         <img
                           src={post.userImage}
                           alt={post.userUsername}
-                          className="rounded-circle"
-                          style={{
-                            width: "48px",
-                            height: "48px",
-                            objectFit: "cover",
-                          }}
+                          className="community-avatar community-avatar--md rounded-circle"
                         />
 
-                        <div>
+                        <div className="community-post-header">
                           <h6 className="mb-0">{post.userUsername}</h6>
-                          <small className="text-muted">
+                          <small className="community-date">
                             {post.createdAt
                               ? new Date(post.createdAt).toLocaleString("it-IT")
                               : "Data non disponibile"}
@@ -567,7 +560,7 @@ const CommunityPage = () => {
                         <div className="d-flex gap-0 align-items-center flex-shrink-0">
                           <button
                             type="button"
-                            className="btn btn-sm btn-outline-light border-0"
+                            className="community-icon-btn btn btn-sm btn-outline-light border-0"
                             onClick={() => startEditing(post)}
                           >
                             <TbEdit className="fs-3" />
@@ -575,7 +568,7 @@ const CommunityPage = () => {
 
                           <button
                             type="button"
-                            className="btn btn-sm btn-outline-danger border-0"
+                            className="community-icon-btn danger btn btn-sm btn-outline-danger border-0"
                             onClick={() => openDeleteModal(post)}
                           >
                             <TbXboxX className="fs-3" />
@@ -587,27 +580,22 @@ const CommunityPage = () => {
                     {isEditing ? (
                       <>
                         <textarea
-                          className="form-control mb-3 bg-dark text-white border-secondary"
+                          className="community-textarea form-control mb-3"
                           rows="3"
                           value={editContent}
                           onChange={(e) => setEditContent(e.target.value)}
                         />
 
                         {editPreviewUrl && (
-                          <div className="position-relative mb-3">
+                          <div className="community-preview position-relative mb-3">
                             <img
                               src={editPreviewUrl}
                               alt="preview modifica"
-                              className="img-fluid rounded"
-                              style={{
-                                maxHeight: "300px",
-                                width: "100%",
-                                objectFit: "cover",
-                              }}
+                              className="img-fluid community-preview-image"
                             />
                             <button
                               type="button"
-                              className="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 border-0"
+                              className="community-remove-btn btn btn-danger btn-sm position-absolute top-0 end-0 m-2 border-0"
                               onClick={handleRemoveEditImage}
                             >
                               <TbXboxX className="fs-4" />
@@ -638,7 +626,7 @@ const CommunityPage = () => {
                           <div className="d-flex gap-2">
                             <button
                               type="button"
-                              className="btn btn-primary btn-sm"
+                              className=" btn btn-primary btn-sm"
                               onClick={cancelEditing}
                             >
                               Annulla
@@ -656,29 +644,28 @@ const CommunityPage = () => {
                       </>
                     ) : (
                       <>
-                        <p className="mb-3">{post.content}</p>
+                        <p className="mb-3 community-post-content">
+                          {post.content}
+                        </p>
 
-                        {post.imageUrl && (
-                          <img
-                            src={post.imageUrl}
-                            alt="immagine del post"
-                            className="img-fluid rounded mb-3"
-                            style={{
-                              maxHeight: "400px",
-                              objectFit: "cover",
-                              width: "100%",
-                            }}
-                          />
-                        )}
+                        <div className="community-post-image-wrapper">
+                          {post.imageUrl && (
+                            <img
+                              src={post.imageUrl}
+                              alt="immagine del post"
+                              className="community-post-image mb-3"
+                            />
+                          )}
+                        </div>
                       </>
                     )}
 
-                    <div className="d-flex gap-3 text-muted small mt-3 align-items-center">
+                    <div className="community-actions d-flex gap-3 text-muted small mt-3 align-items-center">
                       <button
                         type="button"
-                        className={`btn d-flex align-items-center gap-2 ${
+                        className={`community-action-btn btn d-flex align-items-center gap-2 ${
                           post.likedByCurrentUser
-                            ? "btn-outline-primary"
+                            ? "is-liked"
                             : "btn-outline-light"
                         }`}
                         onClick={() => handleToggleLike(post)}
@@ -689,7 +676,7 @@ const CommunityPage = () => {
 
                       <button
                         type="button"
-                        className="btn btn-outline-light d-flex align-items-center gap-2"
+                        className="community-action-btn btn btn-outline-light d-flex align-items-center gap-2"
                         onClick={() => toggleComments(post.id)}
                       >
                         <FaRegComment /> <span>{post.commentsCount}</span>
@@ -697,12 +684,12 @@ const CommunityPage = () => {
                     </div>
 
                     {showCommentsByPost[post.id] && (
-                      <div className="mt-3 border-top border-secondary pt-3">
+                      <div className="community-comments mt-3 pt-3">
                         {token && (
                           <div className="d-flex gap-2 mb-3">
                             <input
                               type="text"
-                              className="form-control bg-dark text-white border-secondary"
+                              className="community-input form-control text-white border-secondary"
                               placeholder="Scrivi un commento..."
                               value={commentInputs[post.id] || ""}
                               onChange={(e) =>
@@ -715,7 +702,7 @@ const CommunityPage = () => {
 
                             <button
                               type="button"
-                              className="btn btn-outline-light"
+                              className="btn btn-outline-light "
                               onClick={() => handleCreateComment(post.id)}
                               disabled={
                                 postingCommentByPost[post.id] ||
@@ -730,13 +717,13 @@ const CommunityPage = () => {
                         )}
 
                         {!token && (
-                          <p className="small text-muted">
+                          <p className="small community-muted-text">
                             Effettua il login per commentare.
                           </p>
                         )}
 
                         {loadingCommentsByPost[post.id] ? (
-                          <p className="small text-muted">
+                          <p className="small community-muted-text">
                             Caricamento commenti...
                           </p>
                         ) : commentsByPost[post.id]?.length > 0 ? (
@@ -790,8 +777,8 @@ const CommunityPage = () => {
                             )}
                           </>
                         ) : (
-                          <p className="small text-muted mb-0">
-                            Nessun commento.
+                          <p className="small community-muted-text mb-0">
+                            Nessun commento
                           </p>
                         )}
                       </div>
@@ -805,7 +792,7 @@ const CommunityPage = () => {
       </div>
 
       {totalPages > 1 && (
-        <div className="d-flex justify-content-center align-items-center gap-3 mt-4">
+        <div className="community-pagination d-flex justify-content-center align-items-center gap-3 mt-4">
           <button
             className="btn btn-outline-light"
             onClick={() => setPage((prev) => prev - 1)}
