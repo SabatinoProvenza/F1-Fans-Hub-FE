@@ -59,6 +59,8 @@ const CommunityPage = () => {
   const [selectedComment, setSelectedComment] = useState(null)
   const [selectedCommentPostId, setSelectedCommentPostId] = useState(null)
 
+  const [selectedImage, setSelectedImage] = useState(null)
+
   const fileInputRef = useRef(null)
   const editFileInputRef = useRef(null)
 
@@ -654,6 +656,8 @@ const CommunityPage = () => {
                               src={post.imageUrl}
                               alt="immagine del post"
                               className="community-post-image mb-3"
+                              onClick={() => setSelectedImage(post.imageUrl)}
+                              style={{ cursor: "pointer" }}
                             />
                           )}
                         </div>
@@ -812,6 +816,12 @@ const CommunityPage = () => {
           >
             Successiva
           </button>
+        </div>
+      )}
+
+      {selectedImage && (
+        <div className="image-modal" onClick={() => setSelectedImage(null)}>
+          <img src={selectedImage} alt="preview" />
         </div>
       )}
 
