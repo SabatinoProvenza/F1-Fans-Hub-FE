@@ -1,11 +1,23 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import LoadingSpinner from "../components/Spinner/LoadingSpinner"
 import { useAuth } from "../components/Context/AuthContext"
-import Modal from "react-bootstrap/Modal"
-import Button from "react-bootstrap/Button"
 import { TbEdit, TbXboxX } from "react-icons/tb"
 import { GrLike } from "react-icons/gr"
 import { FaRegComment } from "react-icons/fa"
+import {
+  getPosts,
+  createPost,
+  updatePost,
+  deletePost,
+  toggleLike,
+  getComments,
+  createComment,
+  updateComment,
+  deleteComment,
+} from "../components/Community/communityService"
+import DeleteConfirmModal from "../components/Community/DeleteConfirmModal"
+import CreatePostForm from "../components/Community/CreatePostForm"
+import CommentItem from "../components/Community/CommentItem"
 
 const CommunityPage = () => {
   const { user } = useAuth()
@@ -43,6 +55,9 @@ const CommunityPage = () => {
   const [selectedComment, setSelectedComment] = useState(null)
   const [selectedCommentPostId, setSelectedCommentPostId] = useState(null)
 
+  const fileInputRef = useRef(null)
+  const editFileInputRef = useRef(null)
+
   const token = localStorage.getItem("token")
 
   const openDeleteCommentModal = (postId, comment) => {
@@ -73,6 +88,10 @@ const CommunityPage = () => {
     setEditImageFile(null)
     setEditPreviewUrl(post.imageUrl || null)
     setRemoveEditImage(false)
+
+    if (editFileInputRef.current) {
+      editFileInputRef.current.value = ""
+    }
   }
 
   const cancelEditing = () => {
@@ -85,6 +104,10 @@ const CommunityPage = () => {
     setEditImageFile(null)
     setEditPreviewUrl(null)
     setRemoveEditImage(false)
+
+    if (editFileInputRef.current) {
+      editFileInputRef.current.value = ""
+    }
   }
 
   const startEditingComment = (comment) => {
@@ -104,22 +127,11 @@ const CommunityPage = () => {
     try {
       setUpdatingComment(true)
 
-      const res = await fetch(`http://localhost:8080/comments/${commentId}`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          content: editCommentContent,
-        }),
-      })
-
-      if (!res.ok) {
-        throw new Error("Errore durante la modifica del commento")
-      }
-
-      const updatedComment = await res.json()
+      const updatedComment = await updateComment(
+        token,
+        commentId,
+        editCommentContent,
+      )
 
       setCommentsByPost((prev) => ({
         ...prev,
@@ -143,19 +155,7 @@ const CommunityPage = () => {
     try {
       setDeletingCommentId(selectedComment.id)
 
-      const res = await fetch(
-        `http://localhost:8080/comments/${selectedComment.id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      )
-
-      if (!res.ok) {
-        throw new Error("Errore durante l'eliminazione del commento")
-      }
+      await deleteComment(token, selectedComment.id)
 
       setCommentsByPost((prev) => ({
         ...prev,
@@ -220,13 +220,7 @@ const CommunityPage = () => {
     try {
       setLoadingCommentsByPost((prev) => ({ ...prev, [postId]: true }))
 
-      const res = await fetch(`http://localhost:8080/post/${postId}/comments`)
-
-      if (!res.ok) {
-        throw new Error("Errore nel caricamento dei commenti")
-      }
-
-      const data = await res.json()
+      const data = await getComments(postId)
 
       setCommentsByPost((prev) => ({
         ...prev,
@@ -243,17 +237,7 @@ const CommunityPage = () => {
   useEffect(() => {
     const loadPosts = async () => {
       try {
-        const headers = token ? { Authorization: `Bearer ${token}` } : {}
-
-        const res = await fetch("http://localhost:8080/post", {
-          headers,
-        })
-
-        if (!res.ok) {
-          throw new Error("Errore nel caricamento dei post")
-        }
-
-        const data = await res.json()
+        const data = await getPosts(token)
         setPosts(data)
       } catch (err) {
         setError(err.message)
@@ -284,6 +268,10 @@ const CommunityPage = () => {
     if (!file) {
       setImageFile(null)
       setPreviewUrl(null)
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ""
+      }
       return
     }
 
@@ -309,6 +297,19 @@ const CommunityPage = () => {
     setRemoveEditImage(false)
   }
 
+  const handleRemoveImage = () => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl)
+    }
+
+    setImageFile(null)
+    setPreviewUrl(null)
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""
+    }
+  }
+
   const handleRemoveEditImage = () => {
     if (editPreviewUrl && editPreviewUrl.startsWith("blob:")) {
       URL.revokeObjectURL(editPreviewUrl)
@@ -317,6 +318,10 @@ const CommunityPage = () => {
     setEditImageFile(null)
     setEditPreviewUrl(null)
     setRemoveEditImage(true)
+
+    if (editFileInputRef.current) {
+      editFileInputRef.current.value = ""
+    }
   }
 
   const handleCreatePost = async (e) => {
@@ -334,17 +339,7 @@ const CommunityPage = () => {
         formData.append("image", imageFile)
       }
 
-      const res = await fetch("http://localhost:8080/post", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      })
-
-      if (!res.ok) throw new Error("Errore nella creazione del post")
-
-      const newPost = await res.json()
+      const newPost = await createPost(token, formData)
 
       setPosts((prev) => [newPost, ...prev])
       setContent("")
@@ -353,8 +348,13 @@ const CommunityPage = () => {
       if (previewUrl) {
         URL.revokeObjectURL(previewUrl)
       }
+
       setPreviewUrl(null)
       setError(null)
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ""
+      }
     } catch (err) {
       console.error(err)
       setError(err.message)
@@ -378,19 +378,7 @@ const CommunityPage = () => {
         formData.append("image", editImageFile)
       }
 
-      const res = await fetch(`http://localhost:8080/post/${postId}`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      })
-
-      if (!res.ok) {
-        throw new Error("Errore durante la modifica del post")
-      }
-
-      const updatedPost = await res.json()
+      const updatedPost = await updatePost(token, postId, formData)
 
       setPosts((prev) =>
         prev.map((post) => (post.id === updatedPost.id ? updatedPost : post)),
@@ -410,16 +398,7 @@ const CommunityPage = () => {
     if (!selectedPost || !token) return
 
     try {
-      const res = await fetch(`http://localhost:8080/post/${selectedPost.id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!res.ok) {
-        throw new Error("Errore durante l'eliminazione del post")
-      }
+      await deletePost(token, selectedPost.id)
 
       setPosts((prev) => prev.filter((post) => post.id !== selectedPost.id))
       closeDeleteModal()
@@ -430,28 +409,11 @@ const CommunityPage = () => {
     }
   }
 
-  if (loading) return <LoadingSpinner />
-
-  if (error) {
-    return <p className="container my-5 py-5 text-primary">{error}</p>
-  }
-
   const handleToggleLike = async (post) => {
     if (!token) return
 
     try {
-      const res = await fetch(`http://localhost:8080/post/${post.id}/like`, {
-        method: post.likedByCurrentUser ? "DELETE" : "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!res.ok) {
-        throw new Error("Errore durante il like")
-      }
-
-      const updatedPost = await res.json()
+      const updatedPost = await toggleLike(token, post)
 
       setPosts((prev) =>
         prev.map((p) => (p.id === updatedPost.id ? updatedPost : p)),
@@ -472,20 +434,7 @@ const CommunityPage = () => {
     try {
       setPostingCommentByPost((prev) => ({ ...prev, [postId]: true }))
 
-      const res = await fetch(`http://localhost:8080/post/${postId}/comments`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ content }),
-      })
-
-      if (!res.ok) {
-        throw new Error("Errore nella creazione del commento")
-      }
-
-      const newComment = await res.json()
+      const newComment = await createComment(token, postId, content)
 
       setCommentsByPost((prev) => ({
         ...prev,
@@ -512,86 +461,30 @@ const CommunityPage = () => {
     }
   }
 
+  if (loading) return <LoadingSpinner />
+
+  if (error) {
+    return <p className="container my-5 py-5 text-primary">{error}</p>
+  }
+
   return (
     <>
       <div className="container py-5 text-white page-enter">
         <h1 className="my-5 text-center">Community</h1>
 
-        <div className="card mb-5 text-white border-secondary">
-          <div className="card-body">
-            <form onSubmit={handleCreatePost}>
-              <textarea
-                className="form-control mb-3 bg-dark text-white border-secondary"
-                rows="3"
-                placeholder={
-                  user
-                    ? "Cosa vuoi condividere con la community?"
-                    : "Effettua il login per pubblicare un post"
-                }
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-              />
-
-              {previewUrl && (
-                <div className="position-relative mb-3">
-                  <img
-                    src={previewUrl}
-                    alt="preview"
-                    className="img-fluid rounded"
-                    style={{
-                      maxHeight: "300px",
-                      width: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <button
-                    type="button"
-                    className="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 border-0"
-                    onClick={() => {
-                      if (previewUrl) {
-                        URL.revokeObjectURL(previewUrl)
-                      }
-                      setImageFile(null)
-                      setPreviewUrl(null)
-                    }}
-                  >
-                    <TbXboxX className="fs-4" />
-                  </button>
-                </div>
-              )}
-
-              <div className="d-flex flex-wrap justify-content-between align-items-center gap-3">
-                <div>
-                  <label className="btn btn-outline-light m-0">
-                    Aggiungi foto
-                    <input
-                      type="file"
-                      accept="image/*"
-                      hidden
-                      onChange={handleImageChange}
-                    />
-                  </label>
-
-                  {imageFile && (
-                    <span className="ms-3 small text-muted">
-                      {imageFile.name}
-                    </span>
-                  )}
-                </div>
-
-                <button
-                  type="submit"
-                  className="btn btn-outline-light"
-                  disabled={posting || !content.trim() || !token}
-                >
-                  {posting ? "Pubblicazione..." : "Pubblica"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        {error && <p className="text-primary mb-4">{error}</p>}
+        <CreatePostForm
+          user={user}
+          content={content}
+          setContent={setContent}
+          imageFile={imageFile}
+          previewUrl={previewUrl}
+          posting={posting}
+          token={token}
+          fileInputRef={fileInputRef}
+          onSubmit={handleCreatePost}
+          onImageChange={handleImageChange}
+          onRemoveImage={handleRemoveImage}
+        />
 
         {posts.length === 0 ? (
           <p className="text-primary">Nessun post disponibile.</p>
@@ -689,6 +582,7 @@ const CommunityPage = () => {
                                 type="file"
                                 accept="image/*"
                                 hidden
+                                ref={editFileInputRef}
                                 onChange={handleEditImageChange}
                               />
                             </label>
@@ -760,6 +654,7 @@ const CommunityPage = () => {
                         <FaRegComment /> <span>{post.commentsCount}</span>
                       </button>
                     </div>
+
                     {showCommentsByPost[post.id] && (
                       <div className="mt-3 border-top border-secondary pt-3">
                         {token && (
@@ -811,113 +706,24 @@ const CommunityPage = () => {
                               const isOwner = user?.id === comment.userId
 
                               return (
-                                <div
+                                <CommentItem
                                   key={comment.id}
-                                  className="bg-black rounded p-3 border border-secondary"
-                                >
-                                  <div className="d-flex justify-content-between align-items-start gap-3 mb-2">
-                                    <div className="d-flex align-items-center gap-2">
-                                      <img
-                                        src={comment.userImage}
-                                        alt={comment.username}
-                                        className="rounded-circle"
-                                        style={{
-                                          width: "32px",
-                                          height: "32px",
-                                          objectFit: "cover",
-                                        }}
-                                      />
-                                      <div>
-                                        <div className="fw-semibold">
-                                          {comment.username}
-                                        </div>
-                                        <small className="text-muted">
-                                          {comment.createdAt
-                                            ? new Date(
-                                                comment.createdAt,
-                                              ).toLocaleString("it-IT")
-                                            : "Data non disponibile"}
-                                        </small>
-                                      </div>
-                                    </div>
-
-                                    {isOwner && !isEditingComment && (
-                                      <div className="d-flex gap-2 align-items-center flex-shrink-0">
-                                        <button
-                                          type="button"
-                                          className="btn btn-sm btn-outline-light border-0 p-1"
-                                          onClick={() =>
-                                            startEditingComment(comment)
-                                          }
-                                          title="Modifica commento"
-                                        >
-                                          <TbEdit className="fs-5" />
-                                        </button>
-
-                                        <button
-                                          type="button"
-                                          className="btn btn-sm btn-outline-danger border-0 p-1"
-                                          onClick={() =>
-                                            openDeleteCommentModal(
-                                              post.id,
-                                              comment,
-                                            )
-                                          }
-                                          disabled={
-                                            deletingCommentId === comment.id
-                                          }
-                                          title="Elimina commento"
-                                        >
-                                          <TbXboxX className="fs-5" />
-                                        </button>
-                                      </div>
-                                    )}
-                                  </div>
-
-                                  {isEditingComment ? (
-                                    <div>
-                                      <textarea
-                                        className="form-control mb-2 bg-dark text-white border-secondary"
-                                        rows="2"
-                                        value={editCommentContent}
-                                        onChange={(e) =>
-                                          setEditCommentContent(e.target.value)
-                                        }
-                                      />
-
-                                      <div className="d-flex gap-2">
-                                        <button
-                                          type="button"
-                                          className="btn btn-primary btn-sm"
-                                          onClick={cancelEditingComment}
-                                        >
-                                          Annulla
-                                        </button>
-
-                                        <button
-                                          type="button"
-                                          className="btn btn-outline-light btn-sm"
-                                          onClick={() =>
-                                            handleUpdateComment(
-                                              post.id,
-                                              comment.id,
-                                            )
-                                          }
-                                          disabled={
-                                            updatingComment ||
-                                            !editCommentContent.trim()
-                                          }
-                                        >
-                                          {updatingComment
-                                            ? "Salvataggio..."
-                                            : "Salva"}
-                                        </button>
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <p className="mb-0">{comment.content}</p>
-                                  )}
-                                </div>
+                                  comment={comment}
+                                  isEditing={isEditingComment}
+                                  isOwner={isOwner}
+                                  editCommentContent={editCommentContent}
+                                  setEditCommentContent={setEditCommentContent}
+                                  updatingComment={updatingComment}
+                                  deletingCommentId={deletingCommentId}
+                                  onStartEditing={startEditingComment}
+                                  onCancelEditing={cancelEditingComment}
+                                  onUpdate={() =>
+                                    handleUpdateComment(post.id, comment.id)
+                                  }
+                                  onDelete={() =>
+                                    openDeleteCommentModal(post.id, comment)
+                                  }
+                                />
                               )
                             })}
                           </div>
@@ -936,62 +742,22 @@ const CommunityPage = () => {
         )}
       </div>
 
-      <Modal
+      <DeleteConfirmModal
         show={showDeleteModal}
         onHide={closeDeleteModal}
-        centered
-        contentClassName="bg-dark text-white"
-      >
-        <Modal.Header
-          closeButton
-          closeVariant="white"
-          className="border-secondary"
-        >
-          <Modal.Title>Eliminare il post?</Modal.Title>
-        </Modal.Header>
+        onConfirm={handleDeletePost}
+        title="Eliminare il post?"
+        body="Sei sicuro di voler eliminare questo post?"
+      />
 
-        <Modal.Body>Sei sicuro di voler eliminare questo post?</Modal.Body>
-
-        <Modal.Footer className="border-secondary">
-          <Button variant="secondary" onClick={closeDeleteModal}>
-            Annulla
-          </Button>
-
-          <Button variant="primary" onClick={handleDeletePost}>
-            Elimina
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      <Modal
+      <DeleteConfirmModal
         show={showDeleteCommentModal}
         onHide={closeDeleteCommentModal}
-        centered
-        contentClassName="bg-dark text-white"
-      >
-        <Modal.Header
-          closeButton
-          closeVariant="white"
-          className="border-secondary"
-        >
-          <Modal.Title>Eliminare il commento?</Modal.Title>
-        </Modal.Header>
-
-        <Modal.Body>Sei sicuro di voler eliminare questo commento?</Modal.Body>
-
-        <Modal.Footer className="border-secondary">
-          <Button variant="secondary" onClick={closeDeleteCommentModal}>
-            Annulla
-          </Button>
-
-          <Button
-            variant="primary"
-            onClick={handleDeleteComment}
-            disabled={deletingCommentId === selectedComment?.id}
-          >
-            Elimina
-          </Button>
-        </Modal.Footer>
-      </Modal>
+        onConfirm={handleDeleteComment}
+        title="Eliminare il commento?"
+        body="Sei sicuro di voler eliminare questo commento?"
+        loading={deletingCommentId === selectedComment?.id}
+      />
     </>
   )
 }
