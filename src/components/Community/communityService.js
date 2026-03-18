@@ -2,10 +2,12 @@ const BASE_URL = "http://localhost:8080"
 
 // ---------------- POSTS ----------------
 
-export const getPosts = async (token) => {
+export const getPosts = async (token, page = 0, size = 10) => {
   const headers = token ? { Authorization: `Bearer ${token}` } : {}
 
-  const res = await fetch(`${BASE_URL}/post`, { headers })
+  const res = await fetch(`${BASE_URL}/post?page=${page}&size=${size}`, {
+    headers,
+  })
 
   if (!res.ok) {
     throw new Error("Errore nel caricamento dei post")
@@ -78,8 +80,10 @@ export const toggleLike = async (token, post) => {
 
 // ---------------- COMMENTS ----------------
 
-export const getComments = async (postId) => {
-  const res = await fetch(`${BASE_URL}/post/${postId}/comments`)
+export const getComments = async (postId, page = 0, size = 5) => {
+  const res = await fetch(
+    `${BASE_URL}/post/${postId}/comments?page=${page}&size=${size}`,
+  )
 
   if (!res.ok) {
     throw new Error("Errore nel caricamento dei commenti")

@@ -45,6 +45,9 @@ const CommunityPage = () => {
   const [commentInputs, setCommentInputs] = useState({})
   const [loadingCommentsByPost, setLoadingCommentsByPost] = useState({})
   const [postingCommentByPost, setPostingCommentByPost] = useState({})
+  const [commentsPageByPost, setCommentsPageByPost] = useState({})
+  const [commentsHasMoreByPost, setCommentsHasMoreByPost] = useState({})
+  const [loadingMoreCommentsByPost, setLoadingMoreCommentsByPost] = useState({})
 
   const [editingCommentId, setEditingCommentId] = useState(null)
   const [editCommentContent, setEditCommentContent] = useState("")
@@ -57,6 +60,10 @@ const CommunityPage = () => {
 
   const fileInputRef = useRef(null)
   const editFileInputRef = useRef(null)
+
+  const [page, setPage] = useState(0)
+  const [size] = useState(10)
+  const [totalPages, setTotalPages] = useState(0)
 
   const token = localStorage.getItem("token")
 
@@ -118,6 +125,11 @@ const CommunityPage = () => {
   const cancelEditingComment = () => {
     setEditingCommentId(null)
     setEditCommentContent("")
+  }
+
+  const handleLoadMoreComments = async (postId) => {
+    const currentPage = commentsPageByPost[postId] ?? 0
+    await loadComments(postId, currentPage + 1)
   }
 
   const handleUpdateComment = async (postId, commentId) => {
@@ -205,7 +217,7 @@ const CommunityPage = () => {
     }))
 
     if (!commentsByPost[postId]) {
-      await loadComments(postId)
+      await loadComments(postId, 0)
     }
   }
 
@@ -216,39 +228,66 @@ const CommunityPage = () => {
     }))
   }
 
-  const loadComments = async (postId) => {
+  const loadComments = async (postId, pageToLoad = 0) => {
     try {
-      setLoadingCommentsByPost((prev) => ({ ...prev, [postId]: true }))
+      if (pageToLoad === 0) {
+        setLoadingCommentsByPost((prev) => ({ ...prev, [postId]: true }))
+      } else {
+        setLoadingMoreCommentsByPost((prev) => ({ ...prev, [postId]: true }))
+      }
 
-      const data = await getComments(postId)
+      const data = await getComments(postId, pageToLoad, 5)
 
       setCommentsByPost((prev) => ({
         ...prev,
-        [postId]: data,
+        [postId]:
+          pageToLoad === 0
+            ? data.content
+            : [...(prev[postId] || []), ...data.content],
+      }))
+
+      setCommentsPageByPost((prev) => ({
+        ...prev,
+        [postId]: data.number,
+      }))
+
+      setCommentsHasMoreByPost((prev) => ({
+        ...prev,
+        [postId]: !data.last,
       }))
     } catch (err) {
       console.error(err)
       setError(err.message)
     } finally {
-      setLoadingCommentsByPost((prev) => ({ ...prev, [postId]: false }))
+      if (pageToLoad === 0) {
+        setLoadingCommentsByPost((prev) => ({ ...prev, [postId]: false }))
+      } else {
+        setLoadingMoreCommentsByPost((prev) => ({ ...prev, [postId]: false }))
+      }
+    }
+  }
+
+  const loadPosts = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      const data = await getPosts(token, page, size)
+
+      setPosts(data.content)
+      setTotalPages(data.totalPages)
+    } catch (err) {
+      console.error(err)
+      setError(err.message)
+    } finally {
+      setLoading(false)
     }
   }
 
   useEffect(() => {
-    const loadPosts = async () => {
-      try {
-        const data = await getPosts(token)
-        setPosts(data)
-      } catch (err) {
-        setError(err.message)
-      } finally {
-        setLoading(false)
-      }
-    }
-
     loadPosts()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [token, page, size])
 
   useEffect(() => {
     return () => {
@@ -339,9 +378,8 @@ const CommunityPage = () => {
         formData.append("image", imageFile)
       }
 
-      const newPost = await createPost(token, formData)
+      await createPost(token, formData)
 
-      setPosts((prev) => [newPost, ...prev])
       setContent("")
       setImageFile(null)
 
@@ -355,6 +393,9 @@ const CommunityPage = () => {
       if (fileInputRef.current) {
         fileInputRef.current.value = ""
       }
+
+      setPage(0)
+      await loadPosts(0)
     } catch (err) {
       console.error(err)
       setError(err.message)
@@ -399,10 +440,10 @@ const CommunityPage = () => {
 
     try {
       await deletePost(token, selectedPost.id)
-
-      setPosts((prev) => prev.filter((post) => post.id !== selectedPost.id))
       closeDeleteModal()
       setError(null)
+
+      await loadPosts(page)
     } catch (err) {
       console.error(err)
       setError(err.message)
@@ -699,34 +740,55 @@ const CommunityPage = () => {
                             Caricamento commenti...
                           </p>
                         ) : commentsByPost[post.id]?.length > 0 ? (
-                          <div className="d-flex flex-column gap-3">
-                            {commentsByPost[post.id]?.map((comment) => {
-                              const isEditingComment =
-                                editingCommentId === comment.id
-                              const isOwner = user?.id === comment.userId
+                          <>
+                            <div className="d-flex flex-column gap-3">
+                              {commentsByPost[post.id]?.map((comment) => {
+                                const isEditingComment =
+                                  editingCommentId === comment.id
+                                const isOwner = user?.id === comment.userId
 
-                              return (
-                                <CommentItem
-                                  key={comment.id}
-                                  comment={comment}
-                                  isEditing={isEditingComment}
-                                  isOwner={isOwner}
-                                  editCommentContent={editCommentContent}
-                                  setEditCommentContent={setEditCommentContent}
-                                  updatingComment={updatingComment}
-                                  deletingCommentId={deletingCommentId}
-                                  onStartEditing={startEditingComment}
-                                  onCancelEditing={cancelEditingComment}
-                                  onUpdate={() =>
-                                    handleUpdateComment(post.id, comment.id)
+                                return (
+                                  <CommentItem
+                                    key={comment.id}
+                                    comment={comment}
+                                    isEditing={isEditingComment}
+                                    isOwner={isOwner}
+                                    editCommentContent={editCommentContent}
+                                    setEditCommentContent={
+                                      setEditCommentContent
+                                    }
+                                    updatingComment={updatingComment}
+                                    deletingCommentId={deletingCommentId}
+                                    onStartEditing={startEditingComment}
+                                    onCancelEditing={cancelEditingComment}
+                                    onUpdate={() =>
+                                      handleUpdateComment(post.id, comment.id)
+                                    }
+                                    onDelete={() =>
+                                      openDeleteCommentModal(post.id, comment)
+                                    }
+                                  />
+                                )
+                              })}
+                            </div>
+
+                            {commentsHasMoreByPost[post.id] && (
+                              <div className="mt-3 text-center">
+                                <button
+                                  type="button"
+                                  className="btn btn-outline-light"
+                                  onClick={() =>
+                                    handleLoadMoreComments(post.id)
                                   }
-                                  onDelete={() =>
-                                    openDeleteCommentModal(post.id, comment)
-                                  }
-                                />
-                              )
-                            })}
-                          </div>
+                                  disabled={loadingMoreCommentsByPost[post.id]}
+                                >
+                                  {loadingMoreCommentsByPost[post.id]
+                                    ? "Caricamento..."
+                                    : "Carica altri commenti"}
+                                </button>
+                              </div>
+                            )}
+                          </>
                         ) : (
                           <p className="small text-muted mb-0">
                             Nessun commento.
@@ -741,6 +803,30 @@ const CommunityPage = () => {
           </div>
         )}
       </div>
+
+      {totalPages > 1 && (
+        <div className="d-flex justify-content-center align-items-center gap-3 mt-4">
+          <button
+            className="btn btn-outline-light"
+            onClick={() => setPage((prev) => prev - 1)}
+            disabled={page === 0}
+          >
+            Precedente
+          </button>
+
+          <span className="text-white">
+            Pagina {page + 1} di {totalPages}
+          </span>
+
+          <button
+            className="btn btn-outline-light"
+            onClick={() => setPage((prev) => prev + 1)}
+            disabled={page >= totalPages - 1}
+          >
+            Successiva
+          </button>
+        </div>
+      )}
 
       <DeleteConfirmModal
         show={showDeleteModal}
