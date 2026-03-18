@@ -3,7 +3,9 @@ import LoadingSpinner from "../components/Spinner/LoadingSpinner"
 import { useAuth } from "../components/Context/AuthContext"
 import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
-import { TbXboxX } from "react-icons/tb"
+import { TbEdit, TbXboxX } from "react-icons/tb"
+import { GrLike } from "react-icons/gr"
+import { FaRegComment } from "react-icons/fa"
 
 const CommunityPage = () => {
   const { user } = useAuth()
@@ -26,7 +28,34 @@ const CommunityPage = () => {
   const [removeEditImage, setRemoveEditImage] = useState(false)
   const [updating, setUpdating] = useState(false)
 
+  const [commentsByPost, setCommentsByPost] = useState({})
+  const [showCommentsByPost, setShowCommentsByPost] = useState({})
+  const [commentInputs, setCommentInputs] = useState({})
+  const [loadingCommentsByPost, setLoadingCommentsByPost] = useState({})
+  const [postingCommentByPost, setPostingCommentByPost] = useState({})
+
+  const [editingCommentId, setEditingCommentId] = useState(null)
+  const [editCommentContent, setEditCommentContent] = useState("")
+  const [updatingComment, setUpdatingComment] = useState(false)
+  const [deletingCommentId, setDeletingCommentId] = useState(null)
+
+  const [showDeleteCommentModal, setShowDeleteCommentModal] = useState(false)
+  const [selectedComment, setSelectedComment] = useState(null)
+  const [selectedCommentPostId, setSelectedCommentPostId] = useState(null)
+
   const token = localStorage.getItem("token")
+
+  const openDeleteCommentModal = (postId, comment) => {
+    setSelectedComment(comment)
+    setSelectedCommentPostId(postId)
+    setShowDeleteCommentModal(true)
+  }
+
+  const closeDeleteCommentModal = () => {
+    setSelectedComment(null)
+    setSelectedCommentPostId(null)
+    setShowDeleteCommentModal(false)
+  }
 
   const openDeleteModal = (post) => {
     setSelectedPost(post)
@@ -58,10 +87,167 @@ const CommunityPage = () => {
     setRemoveEditImage(false)
   }
 
+  const startEditingComment = (comment) => {
+    setEditingCommentId(comment.id)
+    setEditCommentContent(comment.content)
+  }
+
+  const cancelEditingComment = () => {
+    setEditingCommentId(null)
+    setEditCommentContent("")
+  }
+
+  const handleUpdateComment = async (postId, commentId) => {
+    if (!token) return
+    if (!editCommentContent.trim()) return
+
+    try {
+      setUpdatingComment(true)
+
+      const res = await fetch(`http://localhost:8080/comments/${commentId}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: editCommentContent,
+        }),
+      })
+
+      if (!res.ok) {
+        throw new Error("Errore durante la modifica del commento")
+      }
+
+      const updatedComment = await res.json()
+
+      setCommentsByPost((prev) => ({
+        ...prev,
+        [postId]: (prev[postId] || []).map((comment) =>
+          comment.id === commentId ? updatedComment : comment,
+        ),
+      }))
+
+      cancelEditingComment()
+    } catch (err) {
+      console.error(err)
+      setError(err.message)
+    } finally {
+      setUpdatingComment(false)
+    }
+  }
+
+  const handleDeleteComment = async () => {
+    if (!token || !selectedComment || !selectedCommentPostId) return
+
+    try {
+      setDeletingCommentId(selectedComment.id)
+
+      const res = await fetch(
+        `http://localhost:8080/comments/${selectedComment.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+
+      if (!res.ok) {
+        throw new Error("Errore durante l'eliminazione del commento")
+      }
+
+      setCommentsByPost((prev) => ({
+        ...prev,
+        [selectedCommentPostId]: (prev[selectedCommentPostId] || []).filter(
+          (comment) => comment.id !== selectedComment.id,
+        ),
+      }))
+
+      setPosts((prev) =>
+        prev.map((post) =>
+          post.id === selectedCommentPostId
+            ? {
+                ...post,
+                commentsCount: Math.max(0, post.commentsCount - 1),
+              }
+            : post,
+        ),
+      )
+
+      if (editingCommentId === selectedComment.id) {
+        cancelEditingComment()
+      }
+
+      closeDeleteCommentModal()
+    } catch (err) {
+      console.error(err)
+      setError(err.message)
+    } finally {
+      setDeletingCommentId(null)
+    }
+  }
+
+  const toggleComments = async (postId) => {
+    const isOpen = showCommentsByPost[postId]
+
+    if (isOpen) {
+      setShowCommentsByPost((prev) => ({
+        ...prev,
+        [postId]: false,
+      }))
+      return
+    }
+
+    setShowCommentsByPost((prev) => ({
+      ...prev,
+      [postId]: true,
+    }))
+
+    if (!commentsByPost[postId]) {
+      await loadComments(postId)
+    }
+  }
+
+  const handleCommentInputChange = (postId, value) => {
+    setCommentInputs((prev) => ({
+      ...prev,
+      [postId]: value,
+    }))
+  }
+
+  const loadComments = async (postId) => {
+    try {
+      setLoadingCommentsByPost((prev) => ({ ...prev, [postId]: true }))
+
+      const res = await fetch(`http://localhost:8080/post/${postId}/comments`)
+
+      if (!res.ok) {
+        throw new Error("Errore nel caricamento dei commenti")
+      }
+
+      const data = await res.json()
+
+      setCommentsByPost((prev) => ({
+        ...prev,
+        [postId]: data,
+      }))
+    } catch (err) {
+      console.error(err)
+      setError(err.message)
+    } finally {
+      setLoadingCommentsByPost((prev) => ({ ...prev, [postId]: false }))
+    }
+  }
+
   useEffect(() => {
     const loadPosts = async () => {
       try {
-        const res = await fetch("http://localhost:8080/post")
+        const headers = token ? { Authorization: `Bearer ${token}` } : {}
+
+        const res = await fetch("http://localhost:8080/post", {
+          headers,
+        })
 
         if (!res.ok) {
           throw new Error("Errore nel caricamento dei post")
@@ -77,6 +263,7 @@ const CommunityPage = () => {
     }
 
     loadPosts()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -249,6 +436,82 @@ const CommunityPage = () => {
     return <p className="container my-5 py-5 text-primary">{error}</p>
   }
 
+  const handleToggleLike = async (post) => {
+    if (!token) return
+
+    try {
+      const res = await fetch(`http://localhost:8080/post/${post.id}/like`, {
+        method: post.likedByCurrentUser ? "DELETE" : "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (!res.ok) {
+        throw new Error("Errore durante il like")
+      }
+
+      const updatedPost = await res.json()
+
+      setPosts((prev) =>
+        prev.map((p) => (p.id === updatedPost.id ? updatedPost : p)),
+      )
+    } catch (err) {
+      console.error(err)
+      setError(err.message)
+    }
+  }
+
+  const handleCreateComment = async (postId) => {
+    if (!token) return
+
+    const content = commentInputs[postId]?.trim()
+
+    if (!content) return
+
+    try {
+      setPostingCommentByPost((prev) => ({ ...prev, [postId]: true }))
+
+      const res = await fetch(`http://localhost:8080/post/${postId}/comments`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content }),
+      })
+
+      if (!res.ok) {
+        throw new Error("Errore nella creazione del commento")
+      }
+
+      const newComment = await res.json()
+
+      setCommentsByPost((prev) => ({
+        ...prev,
+        [postId]: [newComment, ...(prev[postId] || [])],
+      }))
+
+      setPosts((prev) =>
+        prev.map((post) =>
+          post.id === postId
+            ? { ...post, commentsCount: post.commentsCount + 1 }
+            : post,
+        ),
+      )
+
+      setCommentInputs((prev) => ({
+        ...prev,
+        [postId]: "",
+      }))
+    } catch (err) {
+      console.error(err)
+      setError(err.message)
+    } finally {
+      setPostingCommentByPost((prev) => ({ ...prev, [postId]: false }))
+    }
+  }
+
   return (
     <>
       <div className="container py-5 text-white page-enter">
@@ -283,7 +546,7 @@ const CommunityPage = () => {
                   />
                   <button
                     type="button"
-                    className="btn btn-danger btn-sm position-absolute top-0 end-0 m-2"
+                    className="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 border-0"
                     onClick={() => {
                       if (previewUrl) {
                         URL.revokeObjectURL(previewUrl)
@@ -292,7 +555,7 @@ const CommunityPage = () => {
                       setPreviewUrl(null)
                     }}
                   >
-                    X
+                    <TbXboxX className="fs-4" />
                   </button>
                 </div>
               )}
@@ -367,13 +630,13 @@ const CommunityPage = () => {
                       </div>
 
                       {user?.id === post.userId && !isEditing && (
-                        <div className="d-flex gap-2">
+                        <div className="d-flex gap-0 align-items-center flex-shrink-0">
                           <button
                             type="button"
-                            className="btn btn-sm btn-outline-light rounded-3"
+                            className="btn btn-sm btn-outline-light border-0"
                             onClick={() => startEditing(post)}
                           >
-                            Modifica
+                            <TbEdit className="fs-3" />
                           </button>
 
                           <button
@@ -410,10 +673,10 @@ const CommunityPage = () => {
                             />
                             <button
                               type="button"
-                              className="btn btn-danger btn-sm position-absolute top-0 end-0 m-2"
+                              className="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 border-0"
                               onClick={handleRemoveEditImage}
                             >
-                              X
+                              <TbXboxX className="fs-4" />
                             </button>
                           </div>
                         )}
@@ -440,14 +703,14 @@ const CommunityPage = () => {
                           <div className="d-flex gap-2">
                             <button
                               type="button"
-                              className="btn btn-secondary btn-sm"
+                              className="btn btn-primary btn-sm"
                               onClick={cancelEditing}
                             >
                               Annulla
                             </button>
 
                             <button
-                              className="btn btn-primary btn-sm"
+                              className="btn btn-outline-light btn-sm"
                               onClick={() => handleEditPost(post.id)}
                               disabled={updating || !editContent.trim()}
                             >
@@ -475,10 +738,196 @@ const CommunityPage = () => {
                       </>
                     )}
 
-                    <div className="d-flex gap-4 text-muted small mt-3">
-                      <span>👍 {post.likesCount} like</span>
-                      <span>💬 {post.commentsCount} commenti</span>
+                    <div className="d-flex gap-3 text-muted small mt-3 align-items-center">
+                      <button
+                        type="button"
+                        className={`btn d-flex align-items-center gap-2 ${
+                          post.likedByCurrentUser
+                            ? "btn-outline-primary"
+                            : "btn-outline-light"
+                        }`}
+                        onClick={() => handleToggleLike(post)}
+                        disabled={!token}
+                      >
+                        <GrLike /> <span>{post.likesCount}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        className="btn btn-outline-light d-flex align-items-center gap-2"
+                        onClick={() => toggleComments(post.id)}
+                      >
+                        <FaRegComment /> <span>{post.commentsCount}</span>
+                      </button>
                     </div>
+                    {showCommentsByPost[post.id] && (
+                      <div className="mt-3 border-top border-secondary pt-3">
+                        {token && (
+                          <div className="d-flex gap-2 mb-3">
+                            <input
+                              type="text"
+                              className="form-control bg-dark text-white border-secondary"
+                              placeholder="Scrivi un commento..."
+                              value={commentInputs[post.id] || ""}
+                              onChange={(e) =>
+                                handleCommentInputChange(
+                                  post.id,
+                                  e.target.value,
+                                )
+                              }
+                            />
+
+                            <button
+                              type="button"
+                              className="btn btn-outline-light"
+                              onClick={() => handleCreateComment(post.id)}
+                              disabled={
+                                postingCommentByPost[post.id] ||
+                                !commentInputs[post.id]?.trim()
+                              }
+                            >
+                              {postingCommentByPost[post.id]
+                                ? "Invio..."
+                                : "Invia"}
+                            </button>
+                          </div>
+                        )}
+
+                        {!token && (
+                          <p className="small text-muted">
+                            Effettua il login per commentare.
+                          </p>
+                        )}
+
+                        {loadingCommentsByPost[post.id] ? (
+                          <p className="small text-muted">
+                            Caricamento commenti...
+                          </p>
+                        ) : commentsByPost[post.id]?.length > 0 ? (
+                          <div className="d-flex flex-column gap-3">
+                            {commentsByPost[post.id]?.map((comment) => {
+                              const isEditingComment =
+                                editingCommentId === comment.id
+                              const isOwner = user?.id === comment.userId
+
+                              return (
+                                <div
+                                  key={comment.id}
+                                  className="bg-black rounded p-3 border border-secondary"
+                                >
+                                  <div className="d-flex justify-content-between align-items-start gap-3 mb-2">
+                                    <div className="d-flex align-items-center gap-2">
+                                      <img
+                                        src={comment.userImage}
+                                        alt={comment.username}
+                                        className="rounded-circle"
+                                        style={{
+                                          width: "32px",
+                                          height: "32px",
+                                          objectFit: "cover",
+                                        }}
+                                      />
+                                      <div>
+                                        <div className="fw-semibold">
+                                          {comment.username}
+                                        </div>
+                                        <small className="text-muted">
+                                          {comment.createdAt
+                                            ? new Date(
+                                                comment.createdAt,
+                                              ).toLocaleString("it-IT")
+                                            : "Data non disponibile"}
+                                        </small>
+                                      </div>
+                                    </div>
+
+                                    {isOwner && !isEditingComment && (
+                                      <div className="d-flex gap-2 align-items-center flex-shrink-0">
+                                        <button
+                                          type="button"
+                                          className="btn btn-sm btn-outline-light border-0 p-1"
+                                          onClick={() =>
+                                            startEditingComment(comment)
+                                          }
+                                          title="Modifica commento"
+                                        >
+                                          <TbEdit className="fs-5" />
+                                        </button>
+
+                                        <button
+                                          type="button"
+                                          className="btn btn-sm btn-outline-danger border-0 p-1"
+                                          onClick={() =>
+                                            openDeleteCommentModal(
+                                              post.id,
+                                              comment,
+                                            )
+                                          }
+                                          disabled={
+                                            deletingCommentId === comment.id
+                                          }
+                                          title="Elimina commento"
+                                        >
+                                          <TbXboxX className="fs-5" />
+                                        </button>
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {isEditingComment ? (
+                                    <div>
+                                      <textarea
+                                        className="form-control mb-2 bg-dark text-white border-secondary"
+                                        rows="2"
+                                        value={editCommentContent}
+                                        onChange={(e) =>
+                                          setEditCommentContent(e.target.value)
+                                        }
+                                      />
+
+                                      <div className="d-flex gap-2">
+                                        <button
+                                          type="button"
+                                          className="btn btn-primary btn-sm"
+                                          onClick={cancelEditingComment}
+                                        >
+                                          Annulla
+                                        </button>
+
+                                        <button
+                                          type="button"
+                                          className="btn btn-outline-light btn-sm"
+                                          onClick={() =>
+                                            handleUpdateComment(
+                                              post.id,
+                                              comment.id,
+                                            )
+                                          }
+                                          disabled={
+                                            updatingComment ||
+                                            !editCommentContent.trim()
+                                          }
+                                        >
+                                          {updatingComment
+                                            ? "Salvataggio..."
+                                            : "Salva"}
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <p className="mb-0">{comment.content}</p>
+                                  )}
+                                </div>
+                              )
+                            })}
+                          </div>
+                        ) : (
+                          <p className="small text-muted mb-0">
+                            Nessun commento.
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               )
@@ -509,6 +958,36 @@ const CommunityPage = () => {
           </Button>
 
           <Button variant="primary" onClick={handleDeletePost}>
+            Elimina
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      <Modal
+        show={showDeleteCommentModal}
+        onHide={closeDeleteCommentModal}
+        centered
+        contentClassName="bg-dark text-white"
+      >
+        <Modal.Header
+          closeButton
+          closeVariant="white"
+          className="border-secondary"
+        >
+          <Modal.Title>Eliminare il commento?</Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body>Sei sicuro di voler eliminare questo commento?</Modal.Body>
+
+        <Modal.Footer className="border-secondary">
+          <Button variant="secondary" onClick={closeDeleteCommentModal}>
+            Annulla
+          </Button>
+
+          <Button
+            variant="primary"
+            onClick={handleDeleteComment}
+            disabled={deletingCommentId === selectedComment?.id}
+          >
             Elimina
           </Button>
         </Modal.Footer>

@@ -48,7 +48,9 @@ const HomePage = function () {
       </section>
 
       <section className="section">
-        {!loading && !error ? <TrendingSection articles={trending} /> : null}
+        {loading && <LoadingSpinner />}
+        {error && <p className="container py-5 text-white">Errore: {error}</p>}
+        {!loading && !error && <TrendingSection articles={trending} />}
       </section>
 
       <section className="section">
