@@ -138,6 +138,9 @@ const ProfilePage = () => {
     const response = await fetch(url, options)
 
     if (!response.ok) {
+      if (response.status === 413) {
+        throw new Error("L'immagine è troppo grande!")
+      }
       const message = await getErrorMessage(
         response,
         "Errore durante l'aggiornamento",
@@ -180,7 +183,7 @@ const ProfilePage = () => {
 
   const fieldConfig = {
     username: {
-      endpoint: "http://localhost:8080//users/me/username",
+      endpoint: "http://localhost:8080/users/me/username",
       payloadKey: "username",
       successMessage: "Username aggiornato con successo",
       validate: (value) => {
