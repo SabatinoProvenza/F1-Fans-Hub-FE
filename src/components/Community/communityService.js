@@ -26,6 +26,12 @@ export const createPost = async (token, formData) => {
   })
 
   if (!res.ok) {
+    if (res.status === 413) {
+      throw new Error(
+        "L'immagine è troppo pesante. Scegli un file più piccolo.",
+      )
+    }
+
     throw new Error("Errore nella creazione del post")
   }
 
@@ -42,6 +48,12 @@ export const updatePost = async (token, postId, formData) => {
   })
 
   if (!res.ok) {
+    if (res.status === 413) {
+      throw new Error(
+        "L'immagine è troppo pesante. Scegli un file più piccolo.",
+      )
+    }
+
     throw new Error("Errore durante la modifica del post")
   }
 

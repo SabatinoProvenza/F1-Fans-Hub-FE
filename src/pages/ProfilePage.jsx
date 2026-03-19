@@ -362,7 +362,9 @@ const ProfilePage = () => {
 
   if (!user) {
     return (
-      <p className="container text-center py-5 mt-5">Utente non autenticato</p>
+      <p className="container text-danger text-center py-5 mt-5">
+        Utente non autenticato
+      </p>
     )
   }
 

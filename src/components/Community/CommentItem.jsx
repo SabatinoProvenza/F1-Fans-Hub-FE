@@ -74,7 +74,7 @@ const CommentItem = ({
           <div className="d-flex gap-2">
             <button
               type="button"
-              className="btn btn-primary btn-sm"
+              className="btn btn-primary"
               onClick={onCancelEditing}
             >
               Annulla
@@ -82,7 +82,7 @@ const CommentItem = ({
 
             <button
               type="button"
-              className="btn btn-outline-light btn-sm"
+              className="btn btn-outline-light"
               onClick={onUpdate}
               disabled={updatingComment || !editCommentContent.trim()}
             >

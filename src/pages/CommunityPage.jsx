@@ -505,17 +505,24 @@ const CommunityPage = () => {
     }
   }
 
-  if (loading) return <LoadingSpinner />
+  useEffect(() => {
+    if (!error) return
 
-  if (error) {
-    return <p className="container my-5 py-5 text-primary">{error}</p>
-  }
+    const timer = setTimeout(() => {
+      setError(null)
+    }, 3000)
+
+    return () => clearTimeout(timer)
+  }, [error])
+
+  if (loading) return <LoadingSpinner />
 
   return (
     <>
       <div className="community-page container py-5 text-white page-enter">
         <h1 className="community-title my-5 text-center">Community</h1>
 
+        {error && <div className="community-toast">{error}</div>}
         <CreatePostForm
           user={user}
           content={content}
@@ -605,9 +612,9 @@ const CommunityPage = () => {
                           </div>
                         )}
 
-                        <div className="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                        <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-2">
                           <div>
-                            <label className="btn btn-outline-light m-0">
+                            <label className="btn btn-outline-light">
                               Cambia foto
                               <input
                                 type="file"
@@ -628,14 +635,14 @@ const CommunityPage = () => {
                           <div className="d-flex gap-2">
                             <button
                               type="button"
-                              className=" btn btn-primary btn-sm"
+                              className=" btn btn-primary"
                               onClick={cancelEditing}
                             >
                               Annulla
                             </button>
 
                             <button
-                              className="btn btn-outline-light btn-sm"
+                              className="btn btn-outline-light"
                               onClick={() => handleEditPost(post.id)}
                               disabled={updating || !editContent.trim()}
                             >
@@ -664,7 +671,7 @@ const CommunityPage = () => {
                       </>
                     )}
 
-                    <div className="community-actions d-flex gap-3 text-muted small mt-3 align-items-center">
+                    <div className="community-actions d-flex gap-3 text-muted small align-items-center">
                       <button
                         type="button"
                         className={`community-action-btn btn d-flex align-items-center gap-2 ${
