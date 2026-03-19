@@ -657,12 +657,12 @@ const CommunityPage = () => {
                           {post.content}
                         </p>
 
-                        <div className="community-post-image-wrapper">
+                        <div className="community-post-image-wrapper mb-3">
                           {post.imageUrl && (
                             <img
                               src={post.imageUrl}
                               alt="immagine del post"
-                              className="community-post-image mb-3"
+                              className="community-post-image"
                               onClick={() => setSelectedImage(post.imageUrl)}
                               style={{ cursor: "pointer" }}
                             />
