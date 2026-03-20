@@ -4,7 +4,7 @@ import { FaArrowRight } from "react-icons/fa"
 
 const TrendingSection = function ({ articles }) {
   return (
-    <section className={`container my-5 ${styles.section}`}>
+    <section className={`page-enter container my-5 ${styles.section}`}>
       <h2 className="display-4 fw-bold mb-5 text-uppercase">Trending Topics</h2>
 
       <div className="row g-4">
