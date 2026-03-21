@@ -21,11 +21,11 @@ const ArticleDetail = function () {
         let url = ""
 
         if (articleId) {
-          url = `http://localhost:8080/users/me/articles/${articleId}`
+          url = `https://considerable-ilise-me-stesso-f977c3cb.koyeb.app/users/me/articles/${articleId}`
         } else if (guid) {
           url = token
-            ? `http://localhost:8080/users/me/news/${guid}`
-            : `http://localhost:8080/api/news/${guid}`
+            ? `https://considerable-ilise-me-stesso-f977c3cb.koyeb.app/users/me/news/${guid}`
+            : `https://considerable-ilise-me-stesso-f977c3cb.koyeb.app/api/news/${guid}`
         } else {
           throw new Error("Identificatore articolo mancante")
         }
@@ -81,14 +81,17 @@ const ArticleDetail = function () {
     try {
       setFavoriteLoading(true)
 
-      const res = await fetch("http://localhost:8080/favorites", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const res = await fetch(
+        "https://considerable-ilise-me-stesso-f977c3cb.koyeb.app/favorites",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(article),
         },
-        body: JSON.stringify(article),
-      })
+      )
 
       if (res.status === 401) {
         throw new Error("Non sei autenticato")

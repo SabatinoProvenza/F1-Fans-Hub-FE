@@ -18,7 +18,9 @@ const HomePage = function () {
         setLoading(true)
         setError(null)
 
-        const res = await fetch("http://localhost:8080/api/news")
+        const res = await fetch(
+          "https://considerable-ilise-me-stesso-f977c3cb.koyeb.app/api/news",
+        )
         if (!res.ok) throw new Error("Errore nel caricamento news")
 
         const data = await res.json()

@@ -90,10 +90,10 @@ const AuthForm = function () {
 
   const getEndpoint = function () {
     if (isRegister) {
-      return "http://localhost:8080/auth/register"
+      return "https://considerable-ilise-me-stesso-f977c3cb.koyeb.app/auth/register"
     }
 
-    return "http://localhost:8080/auth/login"
+    return "https://considerable-ilise-me-stesso-f977c3cb.koyeb.app/auth/login"
   }
 
   const getPayload = function () {

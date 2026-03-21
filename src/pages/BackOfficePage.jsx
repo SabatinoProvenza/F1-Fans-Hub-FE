@@ -5,7 +5,7 @@ import "../components/BackOfficePage/BackOfficePage.scss"
 import LoadingSpinner from "../components/Spinner/LoadingSpinner"
 import { FiX } from "react-icons/fi"
 
-const API_BASE_URL = "http://localhost:8080"
+const API_BASE_URL = "https://considerable-ilise-me-stesso-f977c3cb.koyeb.app"
 
 const formatDate = (dateString) => {
   if (!dateString) return "-"

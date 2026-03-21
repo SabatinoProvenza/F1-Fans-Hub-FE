@@ -44,7 +44,7 @@ const FavoritesPage = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:8080/favorites?page=${page}&size=${pageSize}&sort=${sort}&direction=${direction}`,
+        `https://considerable-ilise-me-stesso-f977c3cb.koyeb.app/favorites?page=${page}&size=${pageSize}&sort=${sort}&direction=${direction}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -80,7 +80,7 @@ const FavoritesPage = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:8080/favorites/${articleGuid}`,
+        `https://considerable-ilise-me-stesso-f977c3cb.koyeb.app/${articleGuid}`,
         {
           method: "DELETE",
           headers: {
