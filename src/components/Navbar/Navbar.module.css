@@ -55,4 +55,10 @@
 
 .link:hover {
   color: #e10600 !important;
+}
+
+@media (max-width: 768px) {
+  .logo {
+    height: 18px;
+  }
 }/*# sourceMappingURL=Navbar.module.css.map */

@@ -56,3 +56,9 @@
 .link:hover {
   color: $brand-red !important;
 }
+
+@media (max-width: 768px) {
+  .logo {
+    height: 18px;
+  }
+}
