@@ -80,7 +80,7 @@ const FavoritesPage = () => {
 
     try {
       const res = await fetch(
-        `https://considerable-ilise-me-stesso-f977c3cb.koyeb.app/${articleGuid}`,
+        `https://considerable-ilise-me-stesso-f977c3cb.koyeb.app/favorites/${articleGuid}`,
         {
           method: "DELETE",
           headers: {
