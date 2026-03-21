@@ -8,6 +8,7 @@ import AuthLayout from "./layout/AuthLayout"
 import ProfilePage from "./pages/ProfilePage"
 import NotFound from "./pages/NotFound"
 import CommunityPage from "./pages/CommunityPage"
+import BackofficePage from "./pages/BackOfficePage"
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/community" element={<CommunityPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/admin" element={<BackofficePage />} />
         </Route>
 
         <Route element={<AuthLayout />}>

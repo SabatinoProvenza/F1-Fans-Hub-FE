@@ -62,6 +62,11 @@ const Navbar = function () {
             {!loading &&
               (user ? (
                 <>
+                  {user.role === "ADMIN" && (
+                    <Link className={`nav-link ${styles.link}`} to="/admin">
+                      Admin
+                    </Link>
+                  )}
                   <Link className={`nav-link ${styles.link}`} to="/profile">
                     {user.username}
                   </Link>

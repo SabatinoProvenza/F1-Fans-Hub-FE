@@ -5,6 +5,7 @@ const AuthContext = createContext()
 const AuthProvider = function ({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [token, setToken] = useState(localStorage.getItem("token") || null)
 
   const fetchLoggedUser = async function () {
     const token = localStorage.getItem("token")
@@ -12,6 +13,7 @@ const AuthProvider = function ({ children }) {
     if (!token) {
       setUser(null)
       setLoading(false)
+      setToken(null)
       return
     }
 
@@ -29,10 +31,12 @@ const AuthProvider = function ({ children }) {
 
       const userData = await response.json()
       setUser(userData)
+      setToken(token)
     } catch (error) {
       localStorage.removeItem("token")
       console.error(error)
       setUser(null)
+      setToken(null)
     } finally {
       setLoading(false)
     }
@@ -52,8 +56,6 @@ const AuthProvider = function ({ children }) {
     fetchLoggedUser()
   }, [])
 
-  useEffect(() => {}, [user])
-
   return (
     <AuthContext.Provider
       value={{
@@ -62,6 +64,7 @@ const AuthProvider = function ({ children }) {
         login,
         logout,
         fetchLoggedUser,
+        token,
       }}
     >
       {children}

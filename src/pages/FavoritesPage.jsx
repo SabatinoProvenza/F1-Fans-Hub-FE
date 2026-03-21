@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
@@ -13,7 +13,12 @@ const FavoritesPage = () => {
   const [showModal, setShowModal] = useState(false)
   const [selectedArticle, setSelectedArticle] = useState(null)
 
-  const [sortBy, setSortBy] = useState("saved-desc")
+  const [sortBy, setSortBy] = useState("savedAt-desc")
+  const [currentPage, setCurrentPage] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
+  const [pageSize] = useState(9)
+
+  const token = localStorage.getItem("token")
 
   const openRemoveModal = (article) => {
     setSelectedArticle(article)
@@ -25,42 +30,51 @@ const FavoritesPage = () => {
     setSelectedArticle(null)
   }
 
-  useEffect(() => {
-    const token = localStorage.getItem("token")
-
+  const loadFavorites = async (page = currentPage) => {
     if (!token) {
       setError("Devi effettuare il login")
       setLoading(false)
       return
     }
 
-    const loadFavorites = async () => {
-      try {
-        const res = await fetch("http://localhost:8080/favorites", {
+    setLoading(true)
+    setError(null)
+
+    const [sort, direction] = sortBy.split("-")
+
+    try {
+      const res = await fetch(
+        `http://localhost:8080/favorites?page=${page}&size=${pageSize}&sort=${sort}&direction=${direction}`,
+        {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        })
+        },
+      )
 
-        if (!res.ok) throw new Error("Errore nel caricamento preferiti")
+      if (!res.ok) throw new Error("Errore nel caricamento preferiti")
 
-        const data = await res.json()
-        setFavorites(data)
-      } catch (e) {
-        setError(e.message)
-      } finally {
-        setLoading(false)
-      }
+      const data = await res.json()
+
+      setFavorites(data.content || [])
+      setTotalPages(data.totalPages || 0)
+      setCurrentPage(data.number || 0)
+    } catch (e) {
+      setError(e.message)
+    } finally {
+      setLoading(false)
     }
+  }
 
+  useEffect(() => {
     loadFavorites()
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortBy, currentPage])
 
   const handleRemoveFavorite = async () => {
     if (!selectedArticle) return
 
     const articleGuid = selectedArticle.guid
-    const token = localStorage.getItem("token")
 
     if (!token) return
 
@@ -79,44 +93,34 @@ const FavoritesPage = () => {
         throw new Error("Errore nella rimozione dai preferiti")
       }
 
-      setFavorites((prev) =>
-        prev.filter((article) => article.guid !== articleGuid),
-      )
-
       closeRemoveModal()
+
+      if (favorites.length === 1 && currentPage > 0) {
+        setCurrentPage((prev) => prev - 1)
+      } else {
+        loadFavorites(currentPage)
+      }
     } catch (error) {
       console.error(error)
     }
   }
 
-  const sortedFavorites = useMemo(() => {
-    const favoritesCopy = [...favorites]
+  const handleSortChange = (e) => {
+    setSortBy(e.target.value)
+    setCurrentPage(0)
+  }
 
-    return favoritesCopy.sort((a, b) => {
-      const pubDateA = new Date(a.pubDate)
-      const pubDateB = new Date(b.pubDate)
+  const goToPreviousPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage((prev) => prev - 1)
+    }
+  }
 
-      const savedAtA = new Date(a.savedAt)
-      const savedAtB = new Date(b.savedAt)
-
-      switch (sortBy) {
-        case "pubDate-desc":
-          return pubDateB - pubDateA
-
-        case "pubDate-asc":
-          return pubDateA - pubDateB
-
-        case "savedAt-desc":
-          return savedAtB - savedAtA
-
-        case "savedAt-asc":
-          return savedAtA - savedAtB
-
-        default:
-          return 0
-      }
-    })
-  }, [favorites, sortBy])
+  const goToNextPage = () => {
+    if (currentPage < totalPages - 1) {
+      setCurrentPage((prev) => prev + 1)
+    }
+  }
 
   if (loading) return <LoadingSpinner />
 
@@ -132,8 +136,8 @@ const FavoritesPage = () => {
             <div>
               <Form.Select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="outline-primary "
+                onChange={handleSortChange}
+                className="outline-primary"
               >
                 <option value="savedAt-desc">Salvati più recentemente</option>
                 <option value="savedAt-asc">Salvati meno recentemente</option>
@@ -153,7 +157,7 @@ const FavoritesPage = () => {
         )}
 
         <div className="row g-4">
-          {sortedFavorites.map((article) => (
+          {favorites.map((article) => (
             <div className="col-md-6 col-lg-4" key={article.articleId}>
               <div className="card article-card h-100 text-white border-0 d-flex flex-column">
                 <img
@@ -161,6 +165,9 @@ const FavoritesPage = () => {
                   className="card-img-top"
                   alt={article.title}
                   style={{ height: "200px", objectFit: "cover" }}
+                  onError={(e) => {
+                    e.target.style.display = "none"
+                  }}
                 />
 
                 <div className="card-body d-flex flex-column">
@@ -200,6 +207,30 @@ const FavoritesPage = () => {
             </div>
           ))}
         </div>
+
+        {totalPages > 1 && (
+          <div className="d-flex justify-content-center align-items-center gap-3 mt-5">
+            <button
+              className="btn btn-outline-light"
+              onClick={goToPreviousPage}
+              disabled={currentPage === 0}
+            >
+              Precedente
+            </button>
+
+            <span className="text-white">
+              Pagina {currentPage + 1} di {totalPages}
+            </span>
+
+            <button
+              className="btn btn-outline-light"
+              onClick={goToNextPage}
+              disabled={currentPage >= totalPages - 1}
+            >
+              Successiva
+            </button>
+          </div>
+        )}
       </div>
 
       <Modal
