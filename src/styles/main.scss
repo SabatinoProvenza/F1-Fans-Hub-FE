@@ -62,9 +62,28 @@ body {
   border: 0;
   padding: 0;
   margin: 0;
+  min-width: 0;
 }
 
 .form-fieldset-reset[disabled] {
   opacity: 1;
   background: transparent;
+}
+
+.form-fieldset-reset:disabled,
+.form-fieldset-reset *:disabled {
+  opacity: 1;
+}
+
+.form-fieldset-reset input:disabled,
+.form-fieldset-reset textarea:disabled,
+.form-fieldset-reset select:disabled {
+  background-color: $brand-dark !important;
+  color: $brand-white !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: $brand-white;
+}
+
+.form-fieldset-reset button:disabled {
+  opacity: 1 !important;
 }
