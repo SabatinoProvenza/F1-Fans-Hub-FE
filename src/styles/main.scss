@@ -57,3 +57,14 @@ body {
     transform: translateY(0);
   }
 }
+
+.form-fieldset-reset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.form-fieldset-reset[disabled] {
+  opacity: 1;
+  background: transparent;
+}

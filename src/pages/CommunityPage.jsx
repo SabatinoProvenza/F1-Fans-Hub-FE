@@ -607,7 +607,7 @@ const CommunityPage = () => {
                       <>
                         <fieldset
                           disabled={updating}
-                          className="border-0 p-0 m-0"
+                          className="form-fieldset-reset"
                         >
                           <textarea
                             className="community-textarea form-control mb-2"
@@ -732,7 +732,7 @@ const CommunityPage = () => {
                         {token && (
                           <fieldset
                             disabled={postingCommentByPost[post.id]}
-                            className="border-0 p-0 m-0"
+                            className="form-fieldset-reset"
                           >
                             <div className="d-flex gap-2 mb-3">
                               <input

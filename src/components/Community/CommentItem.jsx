@@ -65,7 +65,7 @@ const CommentItem = ({
       </div>
 
       {isEditing ? (
-        <fieldset disabled={updatingComment} className="border-0 p-0 m-0">
+        <fieldset disabled={updatingComment} className="form-fieldset-reset">
           <div>
             <textarea
               className="community-textarea form-control mb-2 text-white border-secondary"
