@@ -70,6 +70,9 @@ const CommunityPage = () => {
 
   const token = localStorage.getItem("token")
 
+  const MAX_POST_LENGTH = 500
+  const MAX_COMMENT_LENGTH = 150
+
   const openDeleteCommentModal = (postId, comment) => {
     setSelectedComment(comment)
     setSelectedCommentPostId(postId)
@@ -137,7 +140,11 @@ const CommunityPage = () => {
 
   const handleUpdateComment = async (postId, commentId) => {
     if (!token) return
-    if (!editCommentContent.trim()) return
+
+    const trimmedEditCommentContent = editCommentContent.trim()
+
+    if (!trimmedEditCommentContent) return
+    if (trimmedEditCommentContent.length > MAX_COMMENT_LENGTH) return
 
     try {
       setUpdatingComment(true)
@@ -145,7 +152,7 @@ const CommunityPage = () => {
       const updatedComment = await updateComment(
         token,
         commentId,
-        editCommentContent,
+        trimmedEditCommentContent,
       )
 
       setCommentsByPost((prev) => ({
@@ -370,12 +377,17 @@ const CommunityPage = () => {
     e.preventDefault()
 
     if (!user) return
-    if (!content.trim()) return
+
+    const trimmedContent = content.trim()
+
+    if (!trimmedContent) return
+    if (trimmedContent.length > MAX_POST_LENGTH) return
 
     try {
       setPosting(true)
+
       const formData = new FormData()
-      formData.append("content", content)
+      formData.append("content", trimmedContent)
 
       if (imageFile) {
         formData.append("image", imageFile)
@@ -409,13 +421,17 @@ const CommunityPage = () => {
 
   const handleEditPost = async (postId) => {
     if (!token || !postId) return
-    if (!editContent.trim()) return
+
+    const trimmedEditContent = editContent.trim()
+
+    if (!trimmedEditContent) return
+    if (trimmedEditContent.length > MAX_POST_LENGTH) return
 
     try {
       setUpdating(true)
 
       const formData = new FormData()
-      formData.append("content", editContent)
+      formData.append("content", trimmedEditContent)
       formData.append("removeImage", removeEditImage)
 
       if (editImageFile) {
@@ -474,6 +490,7 @@ const CommunityPage = () => {
     const content = commentInputs[postId]?.trim()
 
     if (!content) return
+    if (content.length > MAX_COMMENT_LENGTH) return
 
     try {
       setPostingCommentByPost((prev) => ({ ...prev, [postId]: true }))
@@ -589,11 +606,18 @@ const CommunityPage = () => {
                     {isEditing ? (
                       <>
                         <textarea
-                          className="community-textarea form-control mb-3"
+                          className="community-textarea form-control mb-2"
                           rows="3"
+                          maxLength={MAX_POST_LENGTH}
                           value={editContent}
                           onChange={(e) => setEditContent(e.target.value)}
                         />
+
+                        <div className="text-end mb-3">
+                          <small className="text-muted">
+                            {editContent.length}/{MAX_POST_LENGTH}
+                          </small>
+                        </div>
 
                         {editPreviewUrl && (
                           <div className="community-preview position-relative mb-3">
@@ -644,7 +668,11 @@ const CommunityPage = () => {
                             <button
                               className="btn btn-outline-light"
                               onClick={() => handleEditPost(post.id)}
-                              disabled={updating || !editContent.trim()}
+                              disabled={
+                                updating ||
+                                !editContent.trim() ||
+                                editContent.trim().length > MAX_POST_LENGTH
+                              }
                             >
                               {updating ? "Salvataggio..." : "Salva"}
                             </button>
@@ -702,6 +730,7 @@ const CommunityPage = () => {
                               type="text"
                               className="community-input form-control text-white border-secondary"
                               placeholder="Scrivi un commento..."
+                              maxLength={MAX_COMMENT_LENGTH}
                               value={commentInputs[post.id] || ""}
                               onChange={(e) =>
                                 handleCommentInputChange(

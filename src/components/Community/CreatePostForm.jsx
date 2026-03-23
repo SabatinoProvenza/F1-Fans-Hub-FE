@@ -1,6 +1,8 @@
 import { TbXboxX } from "react-icons/tb"
 import "./Community.scss"
 
+const MAX_POST_LENGTH = 500
+
 const CreatePostForm = ({
   user,
   content,
@@ -19,8 +21,9 @@ const CreatePostForm = ({
       <div className="card-body">
         <form onSubmit={onSubmit}>
           <textarea
-            className="community-textarea form-control mb-3"
+            className="community-textarea form-control mb-2"
             rows="3"
+            maxLength={MAX_POST_LENGTH}
             placeholder={
               user
                 ? "Cosa vuoi condividere con la community?"
@@ -29,6 +32,12 @@ const CreatePostForm = ({
             value={content}
             onChange={(e) => setContent(e.target.value)}
           />
+
+          <div className="text-end mb-3">
+            <small className="text-muted">
+              {content.length}/{MAX_POST_LENGTH}
+            </small>
+          </div>
 
           {previewUrl && (
             <div className="community-preview position-relative mb-3">

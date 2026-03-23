@@ -1,6 +1,8 @@
 import { TbEdit, TbXboxX } from "react-icons/tb"
 import "./Community.scss"
 
+const MAX_COMMENT_LENGTH = 150
+
 const CommentItem = ({
   comment,
   isEditing,
@@ -67,9 +69,16 @@ const CommentItem = ({
           <textarea
             className="community-textarea form-control mb-2 text-white border-secondary"
             rows="2"
+            maxLength={MAX_COMMENT_LENGTH}
             value={editCommentContent}
             onChange={(e) => setEditCommentContent(e.target.value)}
           />
+
+          <div className="text-end mb-3">
+            <small className="text-muted">
+              {editCommentContent.length}/{MAX_COMMENT_LENGTH}
+            </small>
+          </div>
 
           <div className="d-flex gap-2">
             <button
@@ -84,7 +93,11 @@ const CommentItem = ({
               type="button"
               className="btn btn-outline-light"
               onClick={onUpdate}
-              disabled={updatingComment || !editCommentContent.trim()}
+              disabled={
+                updatingComment ||
+                !editCommentContent.trim() ||
+                editCommentContent.trim().length > MAX_COMMENT_LENGTH
+              }
             >
               {updatingComment ? "Salvataggio..." : "Salva"}
             </button>
