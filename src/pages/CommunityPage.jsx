@@ -605,79 +605,81 @@ const CommunityPage = () => {
 
                     {isEditing ? (
                       <>
-                        <textarea
-                          className="community-textarea form-control mb-2"
-                          rows="3"
-                          maxLength={MAX_POST_LENGTH}
-                          value={editContent}
-                          onChange={(e) => setEditContent(e.target.value)}
-                        />
+                        <fieldset disabled={updating}>
+                          <textarea
+                            className="community-textarea form-control mb-2"
+                            rows="3"
+                            maxLength={MAX_POST_LENGTH}
+                            value={editContent}
+                            onChange={(e) => setEditContent(e.target.value)}
+                          />
 
-                        <div className="text-end mb-3">
-                          <small className="text-muted">
-                            {editContent.length}/{MAX_POST_LENGTH}
-                          </small>
-                        </div>
-
-                        {editPreviewUrl && (
-                          <div className="community-preview position-relative mb-3">
-                            <img
-                              src={editPreviewUrl}
-                              alt="preview modifica"
-                              className="img-fluid community-preview-image"
-                            />
-                            <button
-                              type="button"
-                              className="community-remove-btn btn btn-danger btn-sm position-absolute top-0 end-0 m-2 border-0"
-                              onClick={handleRemoveEditImage}
-                            >
-                              <TbXboxX className="fs-4" />
-                            </button>
+                          <div className="text-end mb-3">
+                            <small className="text-muted">
+                              {editContent.length}/{MAX_POST_LENGTH}
+                            </small>
                           </div>
-                        )}
 
-                        <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-2">
-                          <div>
-                            <label className="btn btn-outline-light">
-                              Cambia foto
-                              <input
-                                type="file"
-                                accept="image/*"
-                                hidden
-                                ref={editFileInputRef}
-                                onChange={handleEditImageChange}
+                          {editPreviewUrl && (
+                            <div className="community-preview position-relative mb-3">
+                              <img
+                                src={editPreviewUrl}
+                                alt="preview modifica"
+                                className="img-fluid community-preview-image"
                               />
-                            </label>
+                              <button
+                                type="button"
+                                className="community-remove-btn btn btn-danger btn-sm position-absolute top-0 end-0 m-2 border-0"
+                                onClick={handleRemoveEditImage}
+                              >
+                                <TbXboxX className="fs-4" />
+                              </button>
+                            </div>
+                          )}
 
-                            {editImageFile && (
-                              <span className="ms-3 small text-muted">
-                                {editImageFile.name}
-                              </span>
-                            )}
+                          <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-2">
+                            <div>
+                              <label className="btn btn-outline-light">
+                                Cambia foto
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  hidden
+                                  ref={editFileInputRef}
+                                  onChange={handleEditImageChange}
+                                />
+                              </label>
+
+                              {editImageFile && (
+                                <span className="ms-3 small text-muted">
+                                  {editImageFile.name}
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="d-flex gap-2">
+                              <button
+                                type="button"
+                                className=" btn btn-primary"
+                                onClick={cancelEditing}
+                              >
+                                Annulla
+                              </button>
+
+                              <button
+                                className="btn btn-outline-light"
+                                onClick={() => handleEditPost(post.id)}
+                                disabled={
+                                  updating ||
+                                  !editContent.trim() ||
+                                  editContent.trim().length > MAX_POST_LENGTH
+                                }
+                              >
+                                {updating ? "Salvataggio..." : "Salva"}
+                              </button>
+                            </div>
                           </div>
-
-                          <div className="d-flex gap-2">
-                            <button
-                              type="button"
-                              className=" btn btn-primary"
-                              onClick={cancelEditing}
-                            >
-                              Annulla
-                            </button>
-
-                            <button
-                              className="btn btn-outline-light"
-                              onClick={() => handleEditPost(post.id)}
-                              disabled={
-                                updating ||
-                                !editContent.trim() ||
-                                editContent.trim().length > MAX_POST_LENGTH
-                              }
-                            >
-                              {updating ? "Salvataggio..." : "Salva"}
-                            </button>
-                          </div>
-                        </div>
+                        </fieldset>
                       </>
                     ) : (
                       <>
