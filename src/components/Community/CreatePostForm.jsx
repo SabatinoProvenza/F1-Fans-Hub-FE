@@ -20,7 +20,7 @@ const CreatePostForm = ({
     <div className="community-form card mb-5 text-white">
       <div className="card-body">
         <form onSubmit={onSubmit}>
-          <fieldset disabled={posting}>
+          <fieldset disabled={posting} className="border-0 p-0 m-0">
             <textarea
               className="community-textarea form-control mb-2"
               rows="3"

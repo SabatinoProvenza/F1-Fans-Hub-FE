@@ -605,7 +605,10 @@ const CommunityPage = () => {
 
                     {isEditing ? (
                       <>
-                        <fieldset disabled={updating}>
+                        <fieldset
+                          disabled={updating}
+                          className="border-0 p-0 m-0"
+                        >
                           <textarea
                             className="community-textarea form-control mb-2"
                             rows="3"
@@ -727,35 +730,40 @@ const CommunityPage = () => {
                     {showCommentsByPost[post.id] && (
                       <div className="community-comments mt-3 pt-3">
                         {token && (
-                          <div className="d-flex gap-2 mb-3">
-                            <input
-                              type="text"
-                              className="community-input form-control text-white border-secondary"
-                              placeholder="Scrivi un commento..."
-                              maxLength={MAX_COMMENT_LENGTH}
-                              value={commentInputs[post.id] || ""}
-                              onChange={(e) =>
-                                handleCommentInputChange(
-                                  post.id,
-                                  e.target.value,
-                                )
-                              }
-                            />
+                          <fieldset
+                            disabled={postingCommentByPost[post.id]}
+                            className="border-0 p-0 m-0"
+                          >
+                            <div className="d-flex gap-2 mb-3">
+                              <input
+                                type="text"
+                                className="community-input form-control text-white border-secondary"
+                                placeholder="Scrivi un commento..."
+                                maxLength={MAX_COMMENT_LENGTH}
+                                value={commentInputs[post.id] || ""}
+                                onChange={(e) =>
+                                  handleCommentInputChange(
+                                    post.id,
+                                    e.target.value,
+                                  )
+                                }
+                              />
 
-                            <button
-                              type="button"
-                              className="btn btn-outline-light "
-                              onClick={() => handleCreateComment(post.id)}
-                              disabled={
-                                postingCommentByPost[post.id] ||
-                                !commentInputs[post.id]?.trim()
-                              }
-                            >
-                              {postingCommentByPost[post.id]
-                                ? "Invio..."
-                                : "Invia"}
-                            </button>
-                          </div>
+                              <button
+                                type="button"
+                                className="btn btn-outline-light "
+                                onClick={() => handleCreateComment(post.id)}
+                                disabled={
+                                  postingCommentByPost[post.id] ||
+                                  !commentInputs[post.id]?.trim()
+                                }
+                              >
+                                {postingCommentByPost[post.id]
+                                  ? "Invio..."
+                                  : "Invia"}
+                              </button>
+                            </div>
+                          </fieldset>
                         )}
 
                         {!token && (

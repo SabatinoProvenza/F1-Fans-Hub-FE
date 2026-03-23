@@ -65,44 +65,46 @@ const CommentItem = ({
       </div>
 
       {isEditing ? (
-        <div>
-          <textarea
-            className="community-textarea form-control mb-2 text-white border-secondary"
-            rows="2"
-            maxLength={MAX_COMMENT_LENGTH}
-            value={editCommentContent}
-            onChange={(e) => setEditCommentContent(e.target.value)}
-          />
+        <fieldset disabled={updatingComment} className="border-0 p-0 m-0">
+          <div>
+            <textarea
+              className="community-textarea form-control mb-2 text-white border-secondary"
+              rows="2"
+              maxLength={MAX_COMMENT_LENGTH}
+              value={editCommentContent}
+              onChange={(e) => setEditCommentContent(e.target.value)}
+            />
 
-          <div className="text-end mb-3">
-            <small className="text-muted">
-              {editCommentContent.length}/{MAX_COMMENT_LENGTH}
-            </small>
+            <div className="text-end mb-3">
+              <small className="text-muted">
+                {editCommentContent.length}/{MAX_COMMENT_LENGTH}
+              </small>
+            </div>
+
+            <div className="d-flex gap-2">
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={onCancelEditing}
+              >
+                Annulla
+              </button>
+
+              <button
+                type="button"
+                className="btn btn-outline-light"
+                onClick={onUpdate}
+                disabled={
+                  updatingComment ||
+                  !editCommentContent.trim() ||
+                  editCommentContent.trim().length > MAX_COMMENT_LENGTH
+                }
+              >
+                {updatingComment ? "Salvataggio..." : "Salva"}
+              </button>
+            </div>
           </div>
-
-          <div className="d-flex gap-2">
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={onCancelEditing}
-            >
-              Annulla
-            </button>
-
-            <button
-              type="button"
-              className="btn btn-outline-light"
-              onClick={onUpdate}
-              disabled={
-                updatingComment ||
-                !editCommentContent.trim() ||
-                editCommentContent.trim().length > MAX_COMMENT_LENGTH
-              }
-            >
-              {updatingComment ? "Salvataggio..." : "Salva"}
-            </button>
-          </div>
-        </div>
+        </fieldset>
       ) : (
         <p className="mb-0 community-comment-content">{comment.content}</p>
       )}
