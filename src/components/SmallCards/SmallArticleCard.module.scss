@@ -84,3 +84,16 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+.small-cards-page {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 1.1s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.small-cards-page.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
