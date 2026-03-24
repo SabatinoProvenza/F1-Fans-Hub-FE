@@ -1,0 +1,38 @@
+.small-cards-viewport {
+  overflow: hidden;
+  width: 100%;
+}
+
+.small-cards-track {
+  display: flex;
+  transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.small-cards-track.no-transition {
+  transition: none;
+}
+
+.small-cards-slide {
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+
+.small-cards-slide-inner {
+  padding-inline: 0.75rem;
+  box-sizing: border-box;
+}
+
+.carousel-btn {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.carousel-btn:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
+}/*# sourceMappingURL=smallCardsSection.css.map */
