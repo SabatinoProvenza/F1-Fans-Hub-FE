@@ -50,11 +50,34 @@ const AuthForm = function () {
     setErrors([])
   }
 
+  const normalizePersonName = (value) => {
+    return value
+      .replace(/\s+/g, " ")
+      .trimStart()
+      .toLowerCase()
+      .replace(/\b\w/g, (char) => char.toUpperCase())
+  }
+
   const handleChange = function (e) {
     const { name, value } = e.target
+
+    let normalizedValue = value
+
+    if (name === "name" || name === "surname") {
+      normalizedValue = normalizePersonName(value)
+    }
+
+    if (name === "username") {
+      normalizedValue = value.toLowerCase()
+    }
+
+    if (name === "email") {
+      normalizedValue = value.toLowerCase()
+    }
+
     setForm((prevForm) => ({
       ...prevForm,
-      [name]: value,
+      [name]: normalizedValue,
     }))
   }
 
@@ -99,16 +122,16 @@ const AuthForm = function () {
   const getPayload = function () {
     if (isRegister) {
       return {
-        name: form.name,
-        surname: form.surname,
-        username: form.username.trim(),
-        email: form.email.trim(),
+        name: form.name.trim(),
+        surname: form.surname.trim(),
+        username: form.username.trim().toLowerCase(),
+        email: form.email.trim().toLowerCase(),
         password: form.password,
       }
     }
 
     return {
-      email: form.email.trim(),
+      email: form.email.trim().toLowerCase(),
       password: form.password,
     }
   }
