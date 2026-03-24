@@ -386,6 +386,7 @@ const CommunityPage = () => {
         editFileInputRef.current.value = ""
       }
 
+      setEditImageFile(null)
       setError(validation.message)
       return
     }
