@@ -68,7 +68,7 @@ const CreatePostForm = ({
                   Aggiungi foto
                   <input
                     type="file"
-                    accept="image/*"
+                    accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
                     hidden
                     ref={fileInputRef}
                     onChange={onImageChange}

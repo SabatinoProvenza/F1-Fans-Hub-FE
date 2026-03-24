@@ -73,6 +73,9 @@ const CommunityPage = () => {
   const MAX_POST_LENGTH = 500
   const MAX_COMMENT_LENGTH = 150
 
+  const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/gif"]
+  const MAX_IMAGE_SIZE = 5 * 1024 * 1024
+
   const openDeleteCommentModal = (postId, comment) => {
     setSelectedComment(comment)
     setSelectedCommentPostId(postId)
@@ -315,12 +318,15 @@ const CommunityPage = () => {
     const file = e.target.files[0]
 
     if (!file) {
-      setImageFile(null)
-      setPreviewUrl(null)
+      resetCreateImageState()
+      return
+    }
 
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ""
-      }
+    const validation = validateImageFile(file)
+
+    if (!validation.valid) {
+      resetCreateImageState()
+      setError(validation.message)
       return
     }
 
@@ -328,8 +334,44 @@ const CommunityPage = () => {
       URL.revokeObjectURL(previewUrl)
     }
 
+    setError(null)
     setImageFile(file)
     setPreviewUrl(URL.createObjectURL(file))
+  }
+
+  const validateImageFile = (file) => {
+    if (!file) {
+      return { valid: false, message: "Nessun file selezionato" }
+    }
+
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      return {
+        valid: false,
+        message: "Puoi caricare solo immagini JPG, PNG o GIF",
+      }
+    }
+
+    if (file.size > MAX_IMAGE_SIZE) {
+      return {
+        valid: false,
+        message: "L'immagine non può superare i 5 MB",
+      }
+    }
+
+    return { valid: true }
+  }
+
+  const resetCreateImageState = () => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl)
+    }
+
+    setImageFile(null)
+    setPreviewUrl(null)
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""
+    }
   }
 
   const handleEditImageChange = (e) => {
@@ -337,10 +379,22 @@ const CommunityPage = () => {
 
     if (!file) return
 
+    const validation = validateImageFile(file)
+
+    if (!validation.valid) {
+      if (editFileInputRef.current) {
+        editFileInputRef.current.value = ""
+      }
+
+      setError(validation.message)
+      return
+    }
+
     if (editPreviewUrl && editPreviewUrl.startsWith("blob:")) {
       URL.revokeObjectURL(editPreviewUrl)
     }
 
+    setError(null)
     setEditImageFile(file)
     setEditPreviewUrl(URL.createObjectURL(file))
     setRemoveEditImage(false)
@@ -646,7 +700,7 @@ const CommunityPage = () => {
                                 Cambia foto
                                 <input
                                   type="file"
-                                  accept="image/*"
+                                  accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
                                   hidden
                                   ref={editFileInputRef}
                                   onChange={handleEditImageChange}
