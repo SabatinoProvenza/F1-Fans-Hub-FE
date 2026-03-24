@@ -152,12 +152,12 @@ const SmallCardsSection = ({ articles }) => {
         >
           {extendedPages.map((page, pageIndex) => (
             <div className="small-cards-slide" key={pageIndex}>
-              <div className="small-cards-slide-inner">
+              <div className="small-cards-slide-inner px-0">
                 <div className="row g-4">
                   {page.map((article, articleIndex) => (
                     <div
                       key={`${article.guid}-${pageIndex}-${articleIndex}`}
-                      className="col-12 col-md-6 col-lg-4 d-flex"
+                      className="col-12 col-md-6 col-lg-4 d-flex py-1"
                     >
                       <SmallArticleCard article={article} />
                     </div>
