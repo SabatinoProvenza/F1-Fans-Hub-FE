@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import SmallArticleCard from "../SmallCards/SmallArticleCard"
-import "./SmallCardsSection.scss"
+import "./smallCardsSection.scss"
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi"
 
 const SmallCardsSection = ({ articles }) => {
@@ -11,7 +11,6 @@ const SmallCardsSection = ({ articles }) => {
   const [isMobile, setIsMobile] = useState(false)
   const [isSliding, setIsSliding] = useState(false)
 
-  // Responsive + reset index corretto
   useEffect(() => {
     const updateItemsPerPage = () => {
       const mobile = window.innerWidth < 576
@@ -35,7 +34,6 @@ const SmallCardsSection = ({ articles }) => {
     return () => window.removeEventListener("resize", updateItemsPerPage)
   }, [])
 
-  // Pagine
   const pages = useMemo(() => {
     if (!articles?.length) return []
 
@@ -52,7 +50,6 @@ const SmallCardsSection = ({ articles }) => {
     return [pages[pages.length - 1], ...pages, pages[0]]
   }, [pages])
 
-  // Autoplay (NO mobile)
   useEffect(() => {
     if (pages.length <= 1 || isHovered || isMobile || isSliding) return
 
@@ -79,7 +76,6 @@ const SmallCardsSection = ({ articles }) => {
     setIsTransitioning(true)
   }
 
-  // Gestione infinite loop
   const handleTransitionEnd = () => {
     if (pages.length <= 1) return
 
@@ -98,7 +94,6 @@ const SmallCardsSection = ({ articles }) => {
     setIsSliding(false)
   }
 
-  // Riattiva transition dopo reset invisibile
   useEffect(() => {
     if (isTransitioning) return
 
