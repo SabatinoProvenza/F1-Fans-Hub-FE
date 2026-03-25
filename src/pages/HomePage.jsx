@@ -6,6 +6,9 @@ import LoadingSpinner from "../components/Spinner/LoadingSpinner"
 import TrendingSection from "../components/TrendingSection/TrendingSection"
 import SmallCardsSection from "../components/SmallCards/SmallCardsSection"
 import { useState, useEffect } from "react"
+import NewsSectionSkeleton from "../components/NewsSectionSkeleton/NewsSectionSkeleton"
+import SmallCardsSectionSkeleton from "../components/SmallCardsSectionSkeleton/SmallCardsSectionSkeleton"
+import TrendingSectionSkeleton from "../components/TrendingSectionSkeleton/TrendingSectionSkeleton"
 
 const HomePage = function () {
   const [articles, setArticles] = useState([])
@@ -27,7 +30,7 @@ const HomePage = function () {
         setArticles(data)
       } catch (e) {
         console.error(e)
-        setError(e.message)
+        setError("Impossibile caricare le notizie. Riprova più tardi")
       } finally {
         setLoading(false)
       }
@@ -45,20 +48,22 @@ const HomePage = function () {
       <Hero />
 
       <section id="news" className="section">
-        {loading && <LoadingSpinner />}
-        {error && <p className="container py-5 text-white">Errore: {error}</p>}
+        {loading && <NewsSectionSkeleton />}
+        {!loading && error && (
+          <div className="container py-5 text-center text-white">
+            <p>{error}</p>
+          </div>
+        )}
         {!loading && !error && <NewsSection articles={featured} />}
       </section>
 
       <section className="section">
-        {loading && <LoadingSpinner />}
-        {error && <p className="container py-5 text-white">Errore: {error}</p>}
+        {loading && <SmallCardsSectionSkeleton />}
         {!loading && !error && <SmallCardsSection articles={middleArticles} />}
       </section>
 
       <section className="section">
-        {loading && <LoadingSpinner />}
-        {error && <p className="container py-5 text-white">Errore: {error}</p>}
+        {loading && <TrendingSectionSkeleton />}
         {!loading && !error && <TrendingSection articles={trending} />}
       </section>
 
