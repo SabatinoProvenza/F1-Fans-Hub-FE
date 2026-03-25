@@ -1,11 +1,12 @@
 .imageWrap {
-  border-radius: 1.25rem;
+  border-radius: 0.9rem;
   overflow: hidden;
   box-shadow: 0 18px 55px rgba(0, 0, 0, 0.45);
-  height: 420px;
+  height: 220px;
 }
-
 .imageWrap img {
+  width: 100%;
+  height: 100%;
   -o-object-fit: cover;
      object-fit: cover;
   display: block;
@@ -13,20 +14,52 @@
 
 .textBox {
   border: 2px solid rgba(245, 245, 245, 0.75);
-  border-radius: 1.25rem;
-  padding: 2rem;
+  border-radius: 0.9rem;
+  padding: 0.8rem;
   background: rgba(0, 0, 0, 0.15);
 }
-
 .textBox h3 {
   color: #f5f5f5;
   font-weight: 800;
+  font-size: 1rem;
+  line-height: 1.3;
 }
-
 .textBox p {
   color: #f5f5f5;
+  font-size: 0.9rem;
+  line-height: 1.5;
 }
 
 :global(.text-muted) {
   color: #a0a0a0 !important;
+}
+
+@media (min-width: 768px) {
+  .imageWrap {
+    height: 300px;
+    border-radius: 1rem;
+  }
+  .textBox {
+    padding: 1.5rem;
+    border-radius: 1rem;
+  }
+  .textBox h3 {
+    font-size: 1.45rem;
+  }
+  .textBox p {
+    font-size: 1rem;
+  }
+}
+@media (min-width: 992px) {
+  .imageWrap {
+    height: 420px;
+    border-radius: 1.25rem;
+  }
+  .textBox {
+    padding: 2rem;
+    border-radius: 1.25rem;
+  }
+  .textBox h3 {
+    font-size: 1.75rem;
+  }
 }/*# sourceMappingURL=ArticleRaw.module.css.map */
