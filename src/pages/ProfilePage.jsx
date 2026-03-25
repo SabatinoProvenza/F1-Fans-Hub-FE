@@ -154,9 +154,15 @@ const ProfilePage = () => {
   const handleChange = ({ target }) => {
     const { name, value } = target
 
+    let normalizedValue = value
+
+    if (name === "username" || name === "email") {
+      normalizedValue = value.toLowerCase()
+    }
+
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: normalizedValue,
     }))
   }
 
@@ -210,6 +216,16 @@ const ProfilePage = () => {
     },
   }
 
+  const normalizeFieldValue = (field, value) => {
+    const trimmed = value.trim()
+
+    if (field === "username" || field === "email") {
+      return trimmed.toLowerCase()
+    }
+
+    return trimmed
+  }
+
   const handleSaveField = async (field) => {
     const config = fieldConfig[field]
 
@@ -219,8 +235,8 @@ const ProfilePage = () => {
     resetMessages()
 
     try {
-      const newValue = formData[field].trim()
-      const currentValue = (user[field] || "").trim()
+      const newValue = normalizeFieldValue(field, formData[field] || "")
+      const currentValue = normalizeFieldValue(field, user[field] || "")
 
       config.validate(newValue)
 
@@ -306,8 +322,15 @@ const ProfilePage = () => {
     resetMessages()
 
     try {
-      if (!file.type.startsWith("image/")) {
-        throw new Error("Seleziona un file immagine valido")
+      const allowedTypes = ["image/jpeg", "image/png", "image/gif"]
+      const maxSize = 5 * 1024 * 1024
+
+      if (!allowedTypes.includes(file.type)) {
+        throw new Error("Puoi caricare solo immagini JPG, PNG o GIF")
+      }
+
+      if (file.size > maxSize) {
+        throw new Error("L'immagine non può superare i 5 MB")
       }
 
       const imageFormData = new FormData()
