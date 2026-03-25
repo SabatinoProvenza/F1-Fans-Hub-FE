@@ -6,6 +6,7 @@ const ArticleRow = function ({ article, reverse = false }) {
     if (!text) return ""
     return text.length > length ? text.slice(0, length) + "..." : text
   }
+  const isMobile = window.innerWidth < 768
 
   return (
     <article className="container my-5">
@@ -31,7 +32,10 @@ const ArticleRow = function ({ article, reverse = false }) {
             <p className="text-muted fw-semibold mb-2">{article.source}</p>
             <p className="mb-0">{truncate(article.description)}</p>
 
-            <Link to={`/news/${article.guid}`} className="btn btn-primary mt-3">
+            <Link
+              to={`/news/${article.guid}`}
+              className="btn btn-primary mt-2 py-1 mt-lg-3 px-3"
+            >
               Scopri di più
             </Link>
           </div>
