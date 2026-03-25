@@ -6,7 +6,6 @@ const ArticleRow = function ({ article, reverse = false }) {
     if (!text) return ""
     return text.length > length ? text.slice(0, length) + "..." : text
   }
-  const isMobile = window.innerWidth < 768
 
   return (
     <article className="container my-5">
